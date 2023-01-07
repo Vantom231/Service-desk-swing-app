@@ -18,7 +18,7 @@
             <column name="title" sql-type="text"/>
         </property>
         <property name="status">
-            <column name="status" sql-type="int(11)" not-null="true"/>
+            <column name="status" sql-type="int(11)" not-null="false"/>
         </property>
         <property name="category">
             <column name="category" sql-type="text"/>

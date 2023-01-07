@@ -1,8 +1,10 @@
 package gui;
 
+import dao.ReportsArchiveDAO;
 import dao.ReportsDao;
 import dao.UsersDAO;
 import entities.Reports;
+import entities.ReportsArchive;
 import entities.Users;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -25,6 +27,11 @@ public class Main extends JFrame{
             JOptionPane.showMessageDialog(null,"Połączenie z bazą danych nie powiodło się");
         }else {
 
+
+            List<ReportsArchive> temp = ReportsArchiveDAO.getAllReports();
+            for (ReportsArchive reportsArchive : temp) {
+                System.out.println(reportsArchive.toString());
+            }
             //debugging help
             List<Users> list = UsersDAO.getAllUsers();
             for (Users a : list) {

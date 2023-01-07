@@ -1,10 +1,12 @@
 package gui;
 
 import dao.MessagesDAO;
+import dao.ReportsArchiveDAO;
 import dao.ReportsDao;
 import dao.UsersDAO;
 import entities.Messeges;
 import entities.Reports;
+import entities.ReportsArchive;
 import entities.Users;
 import org.davidmoten.text.utils.WordWrap;
 import org.hibernate.Session;
@@ -69,6 +71,7 @@ public class UserGUI extends JFrame {
     private JButton newThreadSendButton;
     private JButton button4;
     private JScrollPane scrollpane4;
+    private JLabel messagePanelTitle;
 
     //others
     private static Users currentUser = null;
@@ -108,7 +111,10 @@ public class UserGUI extends JFrame {
             listFiller();
             cardLayout.show(mainPanel, "panel1");
         });
-        panel2Button.addActionListener(e -> cardLayout.show(mainPanel,"panel2"));
+        panel2Button.addActionListener(e -> {
+            archiveListFiller();
+            cardLayout.show(mainPanel,"panel1");
+        });
 
         //newMessage Panel
         newMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newThreadPanel"));
@@ -155,10 +161,21 @@ public class UserGUI extends JFrame {
         cardLayout.show(mainPanel,"panel1");
     }
     private void listFiller(){
+        messagePanelTitle.setText("Wątki w toku");
+        newMessageButton.setVisible(true);
         reportsList = ReportsDao.getReportsByUserID(currentUser.getId());
             messageModel.clear();
         for (Reports reports : reportsList) {
             messageModel.addElement(reports.getTitle());
+        }
+    }
+    private void archiveListFiller(){
+        messagePanelTitle.setText("Archiwalne wątki");
+        newMessageButton.setVisible(false);
+        List<ReportsArchive> temp = ReportsArchiveDAO.getReportsByUserID(currentUser.getId());
+        messageModel.clear();
+        for (ReportsArchive rep : temp) {
+            messageModel.addElement(rep.getTitle());
         }
     }
 

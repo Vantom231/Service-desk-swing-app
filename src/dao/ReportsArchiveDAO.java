@@ -1,5 +1,6 @@
 package dao;
 
+import entities.Reports;
 import entities.ReportsArchive;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -25,6 +26,36 @@ public class ReportsArchiveDAO {
             session.close();
         }
 
+        return temp;
+    }
+    public static List<ReportsArchive> getReportsByUserID(int UserId){
+        Session session = HibernateUtils.getSessionFactory().openSession();
+        List<ReportsArchive> temp = null;
+
+        try{
+            Query query = session.createQuery("From ReportsArchive where userId = :uid ");
+            query.setParameter("uid",UserId);
+            return query.list();
+        }catch(HibernateException e){
+            System.err.println(e);
+        }finally{
+            session.close();
+        }
+        return temp;
+    }
+    public static List<ReportsArchive> getReportsByWorkerID(int WorkerId){
+        Session session = HibernateUtils.getSessionFactory().openSession();
+        List<ReportsArchive> temp = null;
+
+        try{
+            Query query = session.createQuery("From ReportsArchive where workerId = :wid");
+            query.setParameter("wid",WorkerId);
+            return query.list();
+        }catch(HibernateException e){
+            System.err.println(e);
+        }finally {
+            session.close();
+        }
         return temp;
     }
     public static boolean addReport(int userID, int workerID, String title, String status, String category, Timestamp post_date, Timestamp start_date,int priority){

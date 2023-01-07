@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "reports_archive", schema = "projectdb")
+@Table(name = "reports_archive", schema = "projectdb", catalog = "")
 public class ReportsArchive {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -16,6 +16,9 @@ public class ReportsArchive {
     @Basic
     @Column(name = "worker_id", nullable = false)
     private int workerId;
+    @Basic
+    @Column(name = "title", nullable = false, length = -1)
+    private String title;
     @Basic
     @Column(name = "status", nullable = true, length = -1)
     private String status;
@@ -34,9 +37,6 @@ public class ReportsArchive {
     @Basic
     @Column(name = "priority", nullable = false)
     private int priority;
-    @Basic
-    @Column(name = "title", nullable = false, length = -1)
-    private String title;
 
     public int getId() {
         return id;
@@ -60,6 +60,14 @@ public class ReportsArchive {
 
     public void setWorkerId(int workerId) {
         this.workerId = workerId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getStatus() {
@@ -109,13 +117,6 @@ public class ReportsArchive {
     public void setPriority(int priority) {
         this.priority = priority;
     }
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     @Override
     public String toString() {
@@ -123,13 +124,13 @@ public class ReportsArchive {
                 "id=" + id +
                 ", userId=" + userId +
                 ", workerId=" + workerId +
+                ", title='" + title + '\'' +
                 ", status='" + status + '\'' +
                 ", category='" + category + '\'' +
                 ", postDate=" + postDate +
                 ", startDate=" + startDate +
                 ", closeDate=" + closeDate +
                 ", priority=" + priority +
-                ", title='" + title + '\'' +
                 '}';
     }
 }

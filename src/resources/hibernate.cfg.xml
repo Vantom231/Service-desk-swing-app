@@ -23,12 +23,7 @@
 <!--        Users-->
         <mapping class="entities.Users"/>
         <mapping resource="resources/Users.hbm.xml"/>
-        <mapping resource="resources/Reports.hbm.xml"/>
-        <mapping resource="resources/Reports.hbm.xml"/>
-        <mapping resource="resources/ReportsArchive.hbm.xml"/>
-        <mapping resource="resources/Reports.hbm.xml"/>
-        <mapping resource="resources/Messeges.hbm.xml"/>
-        <mapping resource="resources/MessagesArchive.hbm.xml"/>
+
         <!-- <property name="connection.username"/> -->
         <!-- <property name="connection.password"/> -->
 

@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "messages_archive", schema = "projectdb", catalog = "")
+@Table(name = "messages_archive", schema = "projectdb")
 public class MessagesArchive {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -61,5 +61,16 @@ public class MessagesArchive {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    public String toString() {
+        return "MessagesArchive{" +
+                "id=" + id +
+                ", reportsId=" + reportsId +
+                ", date=" + date +
+                ", sender=" + sender +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

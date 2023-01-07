@@ -27,10 +27,10 @@
             <column name="post_date" sql-type="datetime" not-null="true"/>
         </property>
         <property name="startDate">
-            <column name="start_date" sql-type="datetime" not-null="false"/>
+            <column name="start_date" sql-type="datetime" not-null="true"/>
         </property>
         <property name="closeDate">
-            <column name="close_date" sql-type="datetime" not-null="false"/>
+            <column name="close_date" sql-type="datetime" not-null="true"/>
         </property>
         <property name="priority">
             <column name="priority" sql-type="int(11)"/>
