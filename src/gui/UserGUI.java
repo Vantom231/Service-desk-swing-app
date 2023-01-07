@@ -3,14 +3,12 @@ package gui;
 import dao.*;
 import entities.*;
 import org.davidmoten.text.utils.WordWrap;
-import org.hibernate.Session;
 import utils.HibernateUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.math.BigInteger;
 import java.util.List;
 
 public class UserGUI extends JFrame {
@@ -20,18 +18,17 @@ public class UserGUI extends JFrame {
     private JButton panel2Button;
     private JButton panel1Button;
     private JPanel mainPanel;
+
     //home panel
     private JPanel homePanel;
 
-    //panel1
+    //threadPanel
     private JPanel panel1;
     private JList messageList;
-    private DefaultListModel messageModel = (DefaultListModel) messageList.getModel();
+    private final DefaultListModel messageModel = (DefaultListModel) messageList.getModel();
     private JScrollPane scrollPanel;
     private JButton newMessageButton;
 
-    //panel2
-    private JPanel panel2;
 
     //messagePanel
     private JPanel messagePanel;
@@ -39,7 +36,7 @@ public class UserGUI extends JFrame {
     private JButton newSubMessageButton;
     private JButton archiveButton;
     private JList subMessageList;
-    private DefaultListModel subMessageModel = (DefaultListModel) subMessageList.getModel();
+    private final DefaultListModel subMessageModel = (DefaultListModel) subMessageList.getModel();
     private JScrollPane scrollPanel2;
     private JLabel titleText;
     private JLabel dateText;
@@ -69,7 +66,7 @@ public class UserGUI extends JFrame {
     private static Users currentUser = null;
     private List<Reports> reportsList= null;
     private List<ReportsArchive> archiveReportsList = null;
-    private CardLayout cardLayout = new CardLayout();
+    private final CardLayout cardLayout = new CardLayout();
     private int subMessageListIndex = -1;
     private int selectedReportIndex = 0;
 
@@ -83,37 +80,31 @@ public class UserGUI extends JFrame {
         this.setMinimumSize(new Dimension(700,500));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
         Design();
+        this.setVisible(true);
 
-        //CardLayout
+        //CardLayout setup
         mainPanel.setLayout(cardLayout);
         mainPanel.add(homePanel,"home");
         mainPanel.add(panel1,"panel1");
-        mainPanel.add(panel2,"panel2");
         mainPanel.add(messagePanel, "messagePanel");
         mainPanel.add(newMessagePanel, "newMessagePanel");
         mainPanel.add(newThreadPanel, "newThreadPanel");
 
-
         //Buttons Listeners
-        ActionListener currentActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                listFiller();
-                cardLayout.show(mainPanel, "panel1");
-            }
+        ActionListener currentActionListener = e -> {
+            listFiller();
+            cardLayout.show(mainPanel, "panel1");
         };
-        ActionListener archiveActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                archiveListFiller();
-                cardLayout.show(mainPanel, "panel1");
-            }
+
+        ActionListener archiveActionListener = e -> {
+            archiveListFiller();
+            cardLayout.show(mainPanel, "panel1");
         };
 
         //menu
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
+
         panel1Button.addActionListener(e -> {
             listFiller();
             messageList.addMouseListener(messageListMouseListener());
@@ -121,6 +112,7 @@ public class UserGUI extends JFrame {
             messageBackButton.addActionListener(currentActionListener);
             cardLayout.show(mainPanel, "panel1");
         });
+
         panel2Button.addActionListener(e -> {
             archiveListFiller();
             messageList.addMouseListener(archiveMessageListMouseListener());
@@ -131,41 +123,49 @@ public class UserGUI extends JFrame {
 
         //newMessage Panel
         newMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newThreadPanel"));
+
         //subMessagePanel
         newSubMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newMessagePanel"));
+
         archiveButton.addActionListener(e -> {
-            if(reportsList.get(messageList.getSelectedIndex()).getStartDate() == null) System.out.println(true);
-            else System.out.println(false);
             ReportsDao.archive(reportsList.get(messageList.getSelectedIndex()));
             listFiller();
             cardLayout.show(mainPanel, "panel1");
         });
+
         //newMessagePanel
         backToSubMessageButton.addActionListener(e -> messagePanelFiller());
+
         sendNewMessageButton.addActionListener(e -> {
             MessagesDAO.addMessage(selectedReportIndex,0,newMessageTextPane.getText());
             messagePanelFiller();
         });
+
         //newThreadPanel
         newThreadBackButton.addActionListener(e -> {
             listFiller();
             cardLayout.show(mainPanel,"panel1");
         });
+
         newThreadSendButton.addActionListener(e -> newThread());
     }
 
     private void newThread(){
-        if(newTitleText.getText()!=""&&newThreadText.getText()!="") {
+        if(!newTitleText.getText().contentEquals("")&&!newThreadText.getText().contentEquals("")) {
             String category = "brak";
+
             switch (categoryBox.getSelectedIndex()) {
                 case 0 -> category = "cat1";
                 case 1 -> category = "cat2";
                 case 2 -> category = "cat3";
                 case 3 -> category = "cat4";
             }
+
             ReportsDao.addReport(currentUser.getId(), newTitleText.getText(), 0, category, 0);
             MessagesDAO.addMessage(HibernateUtils.getLastID(),0,newThreadText.getText());
+
         }else JOptionPane.showMessageDialog(null,"Prosze wypełnić wszystkie pola");
+
         listFiller();
         cardLayout.show(mainPanel,"panel1");
     }
@@ -173,7 +173,7 @@ public class UserGUI extends JFrame {
         messagePanelTitle.setText("Wątki w toku");
         newMessageButton.setVisible(true);
         reportsList = ReportsDao.getReportsByUserID(currentUser.getId());
-            messageModel.clear();
+        messageModel.clear();
         for (Reports reports : reportsList) {
             messageModel.addElement(reports.getTitle());
         }
@@ -220,7 +220,6 @@ public class UserGUI extends JFrame {
         cardLayout.show(mainPanel,"messagePanel");
     }
     private void archiveMessagePanelFiller(){
-        String workerName = "";
         ReportsArchive temp = archiveReportsList.get(messageList.getSelectedIndex());
 
         newSubMessageButton.setVisible(false);
@@ -230,7 +229,8 @@ public class UserGUI extends JFrame {
         titleText.setText("Tytuł: " + temp.getTitle());
         dateText.setText(temp.getPostDate().toString());
         categoryText.setText("Kategoria: " + temp.getCategory());
-        workerName = UsersDAO.getUserNameByID(temp.getWorkerId());
+
+        String workerName = UsersDAO.getUserNameByID(temp.getWorkerId());
         workerText.setText("Serwisant: " + workerName);
 
         subMessageModel.clear();
@@ -330,17 +330,11 @@ public class UserGUI extends JFrame {
         //subMessagePanel
         scrollPanel2.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         subMessageList.setCellRenderer(cellBorderRenderer());
-//        subMessageList.addMouseListener(listMouseAdapter(subMessageList));
         subMessageList.setFixedCellHeight(-1);
         subMessageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
-        subMessageList.addMouseMotionListener(listMouseMotionListener(subMessageList));
-        subMessageList.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent e) {
-                subMessageListIndex = -1;
-                subMessageList.repaint();
-            }
-        });
+        subMessageListIndex = -1;
+        subMessageList.repaint();
+
         //newMessagePanel
         scrollPane3.setBorder(BorderFactory.createMatteBorder(2,2,2,2,Color.decode("#333333")));
 
