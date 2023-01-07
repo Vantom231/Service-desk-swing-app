@@ -1,13 +1,7 @@
 package gui;
 
-import dao.MessagesDAO;
-import dao.ReportsArchiveDAO;
-import dao.ReportsDao;
-import dao.UsersDAO;
-import entities.Messeges;
-import entities.Reports;
-import entities.ReportsArchive;
-import entities.Users;
+import dao.*;
+import entities.*;
 import org.davidmoten.text.utils.WordWrap;
 import org.hibernate.Session;
 import utils.HibernateUtils;
@@ -15,9 +9,7 @@ import utils.HibernateUtils;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -76,6 +68,7 @@ public class UserGUI extends JFrame {
     //others
     private static Users currentUser = null;
     private List<Reports> reportsList= null;
+    private List<ReportsArchive> archiveReportsList = null;
     private CardLayout cardLayout = new CardLayout();
     private int subMessageListIndex = -1;
     private int selectedReportIndex = 0;
@@ -102,27 +95,43 @@ public class UserGUI extends JFrame {
         mainPanel.add(newMessagePanel, "newMessagePanel");
         mainPanel.add(newThreadPanel, "newThreadPanel");
 
-        messageList.addMouseListener(messageListMouseListener());
 
         //Buttons Listeners
+        ActionListener currentActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listFiller();
+                cardLayout.show(mainPanel, "panel1");
+            }
+        };
+        ActionListener archiveActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                archiveListFiller();
+                cardLayout.show(mainPanel, "panel1");
+            }
+        };
+
         //menu
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
         panel1Button.addActionListener(e -> {
             listFiller();
+            messageList.addMouseListener(messageListMouseListener());
+            messageBackButton.removeActionListener(archiveActionListener);
+            messageBackButton.addActionListener(currentActionListener);
             cardLayout.show(mainPanel, "panel1");
         });
         panel2Button.addActionListener(e -> {
             archiveListFiller();
+            messageList.addMouseListener(archiveMessageListMouseListener());
+            messageBackButton.removeActionListener(currentActionListener);
+            messageBackButton.addActionListener(archiveActionListener);
             cardLayout.show(mainPanel,"panel1");
         });
 
         //newMessage Panel
         newMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newThreadPanel"));
         //subMessagePanel
-        messageBackButton.addActionListener(e -> {
-            listFiller();
-            cardLayout.show(mainPanel, "panel1");
-        });
         newSubMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newMessagePanel"));
         archiveButton.addActionListener(e -> {
             if(reportsList.get(messageList.getSelectedIndex()).getStartDate() == null) System.out.println(true);
@@ -172,9 +181,9 @@ public class UserGUI extends JFrame {
     private void archiveListFiller(){
         messagePanelTitle.setText("Archiwalne wątki");
         newMessageButton.setVisible(false);
-        List<ReportsArchive> temp = ReportsArchiveDAO.getReportsByUserID(currentUser.getId());
+        archiveReportsList = ReportsArchiveDAO.getReportsByUserID(currentUser.getId());
         messageModel.clear();
-        for (ReportsArchive rep : temp) {
+        for (ReportsArchive rep : archiveReportsList) {
             messageModel.addElement(rep.getTitle());
         }
     }
@@ -182,10 +191,15 @@ public class UserGUI extends JFrame {
     private void messagePanelFiller(){
         String workerName = "";
         Reports temp = reportsList.get(messageList.getSelectedIndex());
+
+        newSubMessageButton.setVisible(true);
+        archiveButton.setVisible(true);
+
         selectedReportIndex = temp.getId();
         titleText.setText("Tytuł: " + temp.getTitle());
         dateText.setText(temp.getPostDate().toString());
         categoryText.setText("Kategoria: " + temp.getCategory());
+
         try {
             workerName = UsersDAO.getUserNameByID(temp.getWorkerId());
             workerText.setText("Serwisant: " + workerName);
@@ -197,6 +211,31 @@ public class UserGUI extends JFrame {
         subMessageModel.clear();
         List<Messeges> allMessages = MessagesDAO.getAllMessagesByReportID(temp.getId());
         for (Messeges mess : allMessages) {
+            String str = mess.getMessage();
+            if(mess.getSender() == 1)
+                str = WordWrap.from(workerName + ":\n"+str).maxWidth(90).wrap();
+            else str = WordWrap.from(currentUser.getUsername() +":\n" + str).maxWidth(90).wrap();
+            subMessageModel.addElement(str);
+        }
+        cardLayout.show(mainPanel,"messagePanel");
+    }
+    private void archiveMessagePanelFiller(){
+        String workerName = "";
+        ReportsArchive temp = archiveReportsList.get(messageList.getSelectedIndex());
+
+        newSubMessageButton.setVisible(false);
+        archiveButton.setVisible(false);
+
+        selectedReportIndex = temp.getId();
+        titleText.setText("Tytuł: " + temp.getTitle());
+        dateText.setText(temp.getPostDate().toString());
+        categoryText.setText("Kategoria: " + temp.getCategory());
+        workerName = UsersDAO.getUserNameByID(temp.getWorkerId());
+        workerText.setText("Serwisant: " + workerName);
+
+        subMessageModel.clear();
+        List<MessagesArchive> allMessages = MessagesArchiveDAO.getAllMessagesByReportID(temp.getId());
+        for (MessagesArchive mess : allMessages) {
             String str = mess.getMessage();
             if(mess.getSender() == 1)
                 str = WordWrap.from(workerName + ":\n"+str).maxWidth(90).wrap();
@@ -239,6 +278,14 @@ public class UserGUI extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 messagePanelFiller();
+            }
+        };
+    }
+    private MouseAdapter archiveMessageListMouseListener(){
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                archiveMessagePanelFiller();
             }
         };
     }

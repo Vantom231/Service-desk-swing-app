@@ -27,11 +27,8 @@ public class Main extends JFrame{
             JOptionPane.showMessageDialog(null,"Połączenie z bazą danych nie powiodło się");
         }else {
 
+            new Main();
 
-            List<ReportsArchive> temp = ReportsArchiveDAO.getAllReports();
-            for (ReportsArchive reportsArchive : temp) {
-                System.out.println(reportsArchive.toString());
-            }
             //debugging help
             List<Users> list = UsersDAO.getAllUsers();
             for (Users a : list) {
@@ -50,8 +47,6 @@ public class Main extends JFrame{
             for (Object o : query.list()) {
                 System.out.println(o);
             }
-
-            new Main();
         }
     }
     public Main(){

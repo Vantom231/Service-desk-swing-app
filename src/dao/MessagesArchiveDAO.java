@@ -1,6 +1,7 @@
 package dao;
 
 import entities.MessagesArchive;
+import entities.Messeges;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -27,6 +28,22 @@ public class MessagesArchiveDAO {
         return temp;
     }
 
+    public static List<MessagesArchive> getAllMessagesByReportID(int reportID){
+        Session session = HibernateUtils.getSessionFactory().openSession();
+        List<MessagesArchive> temp = null;
+
+        try{
+            Query query = session.createQuery("From MessagesArchive Where reportsId = :rid");
+            query.setParameter("rid",reportID);
+            temp = query.list();
+        }catch(HibernateException e){
+            System.err.println(e);
+        }
+        finally{
+            session.close();
+        }
+        return temp;
+    }
     public static boolean addMessage(int reports_id, Timestamp date,int sender, String message){
         Session session = HibernateUtils.getSessionFactory().openSession();
         MessagesArchive temp = new MessagesArchive();
