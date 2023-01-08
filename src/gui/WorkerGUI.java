@@ -1,42 +1,40 @@
 package gui;
 
+import dao.ReportsDao;
+import entities.Reports;
+import entities.Users;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class WorkerGUI extends JFrame {
     private JButton homeButton;
-    private JButton panel2Button;
-    private JButton panel1Button;
+    private JButton threadButton;
+    private JButton openThreadButton;
     private JPanel mainPanel;
     private JPanel homePanel;
     private JPanel panel1;
     private JPanel panel2;
     private JPanel panel;
+    private JList messageList;
+    private DefaultListModel messageModel = (DefaultListModel) messageList.getModel();
+    private JLabel threadTitleText;
+    private JScrollPane scrollPanel;
 
-    public static void main(String[] args) {
-        new WorkerGUI();
-    }
+    //others
+    private Users currentUser;
+    private List<Reports> threadList;
+    private int listIndex = -1;
 
-    WorkerGUI(){
+    WorkerGUI(Users current){
         setGui();
+        this.currentUser = current;
     }
 
-    private MouseAdapter buttonMouseAdapter(JButton bt){
-        MouseAdapter temp = new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                bt.setBackground(Color.decode("#485566"));
-            }
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                bt.setBackground(Color.decode("#384455"));
-            }
-        };
-        return temp;
-    }
 
     private void setGui(){
         this.setContentPane(panel);
@@ -44,6 +42,11 @@ public class WorkerGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+        scrollPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        messageList.setCellRenderer(getCellBorderRenderer());
+        messageList.setFixedCellHeight(-1);
+        messageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
 
         //Card Layout
         CardLayout cardLayout = new CardLayout();
@@ -54,16 +57,62 @@ public class WorkerGUI extends JFrame {
 
         //Buttons
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
-        panel1Button.addActionListener(e -> cardLayout.show(mainPanel, "panel1"));
-        panel2Button.addActionListener(e -> cardLayout.show(mainPanel,"panel2"));
+        threadButton.addActionListener(e -> {
+            threadListFiller();
+            messageList.addMouseListener(threadListMouseListener());
+            cardLayout.show(mainPanel,"panel1");
+        });
 
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        panel1Button.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        panel2Button.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        openThreadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        threadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
 
-        homeButton.addMouseListener(buttonMouseAdapter(homeButton));
-        panel1Button.addMouseListener(buttonMouseAdapter(panel1Button));
-        panel2Button.addMouseListener(buttonMouseAdapter(panel2Button));
+        homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
+        openThreadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(openThreadButton));
+        threadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(threadButton));
     }
+    private void threadListFiller(){
+        threadTitleText.setText("Wątki w toku");
+        threadList = ReportsDao.getReportsByWorkerID(currentUser.getId());
+        messageModel.clear();
+        for (Reports thread : threadList) {
+            messageModel.addElement(thread.getTitle());
+        }
+    }
+    private MouseAdapter threadListMouseListener(){
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("in develop");
+            }
+        };
+    }
+
+
+    private DefaultListCellRenderer getCellBorderRenderer() {
+        return new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                JTextArea textArea = new JTextArea();
+                textArea.setLineWrap(true);
+                textArea.setWrapStyleWord(true);
+                textArea.setEditable(false);
+                textArea.setForeground(Color.decode("#cccccc"));
+                if (listIndex == index) textArea.setBackground(Color.decode("#485566"));
+                else textArea.setBackground(Color.decode("#606060"));
+                textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                textArea.setText((String) value);
+
+                JPanel tempPanel = new JPanel();
+                BoxLayout layout = new BoxLayout(tempPanel, BoxLayout.Y_AXIS);
+                tempPanel.setLayout(layout);
+                tempPanel.add(textArea);
+                tempPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
+
+                return tempPanel;
+            }
+        };
+    }
+
 }
 
