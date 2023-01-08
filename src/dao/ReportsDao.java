@@ -32,6 +32,21 @@ public class ReportsDao {
 
         return temp;
     }
+    public static List<Reports> getOpenReports(){
+        Session session = HibernateUtils.getSessionFactory().openSession();
+        List<Reports> temp = null;
+
+        try{
+            Query query = session.createQuery("FROM Reports where workerId = null");
+            temp = query.list();
+        }catch(HibernateException e){
+            System.err.println(e);
+        }finally{
+            session.close();
+        }
+
+        return temp;
+    }
     public static List<Reports> getReportsByUserID(int UserId){
         Session session = HibernateUtils.getSessionFactory().openSession();
         List<Reports> temp = null;

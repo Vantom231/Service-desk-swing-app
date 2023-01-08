@@ -27,6 +27,7 @@ public class WorkerGUI extends JFrame {
     //others
     private Users currentUser;
     private List<Reports> threadList;
+    private List<Reports> openThreadList;
     private int listIndex = -1;
 
     WorkerGUI(Users current){
@@ -57,10 +58,17 @@ public class WorkerGUI extends JFrame {
 
         //Buttons
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
+
         threadButton.addActionListener(e -> {
             threadListFiller();
             messageList.addMouseListener(threadListMouseListener());
             cardLayout.show(mainPanel,"panel1");
+        });
+
+        openThreadButton.addActionListener(e -> {
+            openThreadListFiller();
+            messageList.addMouseListener(threadListMouseListener());
+            cardLayout.show(mainPanel, "panel1");
         });
 
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
@@ -74,9 +82,19 @@ public class WorkerGUI extends JFrame {
     private void threadListFiller(){
         threadTitleText.setText("Wątki w toku");
         threadList = ReportsDao.getReportsByWorkerID(currentUser.getId());
+
         messageModel.clear();
         for (Reports thread : threadList) {
             messageModel.addElement(thread.getTitle());
+        }
+    }
+    private void openThreadListFiller(){
+        threadTitleText.setText("Dostępne Wątki");
+        threadList = ReportsDao.getOpenReports();
+
+        messageModel.clear();
+        for (Reports reports : threadList) {
+            messageModel.addElement(reports.getTitle());
         }
     }
     private MouseAdapter threadListMouseListener(){

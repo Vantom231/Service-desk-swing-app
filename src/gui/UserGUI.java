@@ -236,7 +236,7 @@ public class UserGUI extends JFrame {
 
         subMessageListIndex = -1;
         subMessageList.repaint();
-        
+
         subMessageModel.clear();
         List<MessagesArchive> allMessages = MessagesArchiveDAO.getAllMessagesByReportID(temp.getId());
         for (MessagesArchive mess : allMessages) {
