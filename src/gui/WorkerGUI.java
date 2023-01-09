@@ -10,6 +10,7 @@ import org.davidmoten.text.utils.WordWrap;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -41,6 +42,7 @@ public class WorkerGUI extends JFrame {
     private JTextArea newMessageText;
     private JButton newMessageBackButton;
     private JButton newMessageSendButton;
+    private JScrollPane scrollPanel3;
 
     //others
     CardLayout cardLayout = new CardLayout();
@@ -48,6 +50,7 @@ public class WorkerGUI extends JFrame {
     private List<Reports> threadList;
     private List<Reports> openThreadList;
     private int listIndex = -1;
+
 
     WorkerGUI(Users current){
         setGui();
@@ -72,6 +75,8 @@ public class WorkerGUI extends JFrame {
         subMessageList.setCellRenderer(getCellBorderRenderer());
         subMessageList.setFixedCellHeight(-1);
         subMessageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
+
+        scrollPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 
         //Card Layout
         mainPanel.setLayout(cardLayout);
@@ -105,7 +110,6 @@ public class WorkerGUI extends JFrame {
             threadListFiller();
             cardLayout.show(mainPanel,"panel1");
         });
-        newSubMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newMessagePanel"));
 
         newMessageBackButton.addActionListener(e -> {
             subMessageFiller(true);
@@ -114,7 +118,7 @@ public class WorkerGUI extends JFrame {
         newMessageSendButton.addActionListener(e -> {
             MessagesDAO.addMessage(threadList.get(messageList.getSelectedIndex()).getId(),1,newMessageText.getText());
             subMessageFiller(true);
-            cardLayout.show(mainPanel,"panel1");
+            cardLayout.show(mainPanel,"messagePanel");
         });
 
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
@@ -132,6 +136,7 @@ public class WorkerGUI extends JFrame {
     private void threadListFiller(){
         threadTitleText.setText("Wątki w toku");
         threadList = ReportsDao.getReportsByWorkerID(currentUser.getId());
+
 
         messageModel.clear();
         for (Reports thread : threadList) {
@@ -157,13 +162,31 @@ public class WorkerGUI extends JFrame {
     }
     private void subMessageFiller(boolean activeThread){
             Reports temp = threadList.get(messageList.getSelectedIndex());
+        for (ActionListener a : newSubMessageButton.getActionListeners()) {
+            newSubMessageButton.removeActionListener(a);
+            System.out.println("usuwanie");
+        }
+
+            ActionListener newMessageActionListener = e -> cardLayout.show(mainPanel,"newMessagePanel");
+            ActionListener takeMessageActionListener = e -> {
+                temp.setWorkerId(currentUser.getId());
+                ReportsDao.update(temp);
+                System.out.println("dziala2");
+                openThreadListFiller();
+                cardLayout.show(mainPanel, "panel1");
+            };
 
             if(activeThread) {
-                newSubMessageButton.setVisible(true);
+                newSubMessageButton.setText("Nowa Wiadomość");
+                newSubMessageButton.addActionListener(newMessageActionListener);
                 archiveButton.setVisible(true);
+
             }else{
-                newSubMessageButton.setVisible(false);
+                newSubMessageButton.setText("Przyjmij");
+                newSubMessageButton.addActionListener(takeMessageActionListener);
+                System.out.println("dziala1");
                 archiveButton.setVisible(false);
+
             }
 
             listIndex = temp.getId();
@@ -180,8 +203,6 @@ public class WorkerGUI extends JFrame {
             archiveButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(archiveButton));
             newSubMessageButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newSubMessageButton));
 
-            listIndex = -1;
-            subMessageList.repaint();
             subMessageModel.clear();
             List<Messeges> allMessages = MessagesDAO.getAllMessagesByReportID(temp.getId());
             for (Messeges mess : allMessages) {
@@ -193,9 +214,6 @@ public class WorkerGUI extends JFrame {
             }
             cardLayout.show(mainPanel, "messagePanel");
         }
-
-
-
     private DefaultListCellRenderer getCellBorderRenderer() {
         return new DefaultListCellRenderer() {
             @Override

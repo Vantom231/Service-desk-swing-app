@@ -149,6 +149,7 @@
                         <item value="test01"/>
                         <item value="test02"/>
                       </model>
+                      <selectionMode value="0"/>
                     </properties>
                   </component>
                 </children>
@@ -353,7 +354,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <scrollpane id="5d400">
+                  <scrollpane id="5d400" binding="scrollPanel3">
                     <constraints>
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                     </constraints>

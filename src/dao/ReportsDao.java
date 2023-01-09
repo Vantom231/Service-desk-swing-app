@@ -131,4 +131,17 @@ public class ReportsDao {
         }
 
     }
+    public static void update(Reports report){
+        Session session = HibernateUtils.getSessionFactory().openSession();
+
+        try{
+            session.getTransaction().begin();
+            session.update(report);
+            session.getTransaction().commit();
+        }catch(HibernateException e){
+            System.err.println(e);
+        }finally{
+            session.close();
+        }
+    }
 }
