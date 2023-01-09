@@ -1,11 +1,7 @@
 package gui;
 
-import dao.MessagesDAO;
-import dao.ReportsDao;
-import dao.UsersDAO;
-import entities.Messeges;
-import entities.Reports;
-import entities.Users;
+import dao.*;
+import entities.*;
 import org.davidmoten.text.utils.WordWrap;
 
 import javax.swing.*;
@@ -43,12 +39,17 @@ public class WorkerGUI extends JFrame {
     private JButton newMessageBackButton;
     private JButton newMessageSendButton;
     private JScrollPane scrollPanel3;
+    private JButton archiwumPanelButton;
+    private JPanel archivePanel;
+    private JList archiveList;
+    DefaultListModel archiveModel = (DefaultListModel) archiveList.getModel();
+    private JScrollPane scrollPanel4;
 
     //others
     CardLayout cardLayout = new CardLayout();
     private Users currentUser;
     private List<Reports> threadList;
-    private List<Reports> openThreadList;
+    private List<ReportsArchive> archiveThreadList;
     private int listIndex = -1;
 
 
@@ -76,7 +77,13 @@ public class WorkerGUI extends JFrame {
         subMessageList.setFixedCellHeight(-1);
         subMessageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
 
+        archiveList.setCellRenderer(getCellBorderRenderer());
+        archiveList.setFixedCellHeight(-1);
+        archiveList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
+        archiveList.addMouseListener(archiveThreadListMouseListener());
+
         scrollPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        scrollPanel4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 
         //Card Layout
         mainPanel.setLayout(cardLayout);
@@ -84,6 +91,7 @@ public class WorkerGUI extends JFrame {
         mainPanel.add(panel1,"panel1");
         mainPanel.add(messagePanel,"messagePanel");
         mainPanel.add(newMessagePanel,"newMessagePanel");
+        mainPanel.add(archivePanel, "archivePanel");
 
         //Buttons
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
@@ -121,17 +129,24 @@ public class WorkerGUI extends JFrame {
             cardLayout.show(mainPanel,"messagePanel");
         });
 
+        archiwumPanelButton.addActionListener(e -> {
+            archiveListFiller();
+            cardLayout.show(mainPanel,"archivePanel");
+        });
+
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         openThreadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         threadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         newMessageSendButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         newMessageBackButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        archiwumPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
 
         homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
         openThreadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(openThreadButton));
         threadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(threadButton));
         newMessageSendButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageSendButton));
         newMessageBackButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageBackButton));
+        archiwumPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(archiwumPanelButton));
     }
     private void threadListFiller(){
         threadTitleText.setText("Wątki w toku");
@@ -152,6 +167,14 @@ public class WorkerGUI extends JFrame {
             messageModel.addElement(reports.getTitle());
         }
     }
+    private void archiveListFiller(){
+        archiveThreadList = ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId());
+
+        archiveModel.clear();
+        for (ReportsArchive reportsArchive : archiveThreadList) {
+            archiveModel.addElement(reportsArchive.getTitle());
+        }
+    }
     private MouseAdapter threadListMouseListener(boolean activeThread) {
         return new MouseAdapter() {
             @Override
@@ -160,8 +183,46 @@ public class WorkerGUI extends JFrame {
             }
         };
     }
+    private MouseAdapter archiveThreadListMouseListener(){
+      return new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+              ReportsArchive temp = archiveThreadList.get(archiveList.getSelectedIndex());
+              archiveButton.setVisible(false);
+              newSubMessageButton.setVisible(false);
+              backButton.setVisible(false);
+
+              listIndex = temp.getId();
+              titleText.setText("Tytuł: " + temp.getTitle());
+              dateText.setText(temp.getPostDate().toString());
+              categoryText.setText("Kategoria: " + temp.getCategory());
+
+              String clientName = UsersDAO.getUserNameByID(temp.getUserId());
+              userText.setText("Klient:  " + clientName);
+              backButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+              newSubMessageButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+              archiveButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+              backButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(backButton));
+              archiveButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(archiveButton));
+              newSubMessageButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newSubMessageButton));
+
+              subMessageModel.clear();
+              List<MessagesArchive> allMessages = MessagesArchiveDAO.getAllMessagesByReportID(temp.getId());
+              for (MessagesArchive mess : allMessages) {
+                  String str = mess.getMessage();
+                  if(mess.getSender() == 1)
+                      str = WordWrap.from(currentUser.getUsername() + ":\n"+str).maxWidth(90).wrap();
+                  else str = WordWrap.from(clientName +":\n" + str).maxWidth(90).wrap();
+                  subMessageModel.addElement(str);
+              }
+              cardLayout.show(mainPanel, "messagePanel");
+          }
+      };
+    }
     private void subMessageFiller(boolean activeThread){
             Reports temp = threadList.get(messageList.getSelectedIndex());
+            newSubMessageButton.setVisible(true);
+            backButton.setVisible(true);
         for (ActionListener a : newSubMessageButton.getActionListeners()) {
             newSubMessageButton.removeActionListener(a);
             System.out.println("usuwanie");
@@ -170,7 +231,7 @@ public class WorkerGUI extends JFrame {
             ActionListener newMessageActionListener = e -> cardLayout.show(mainPanel,"newMessagePanel");
             ActionListener takeMessageActionListener = e -> {
                 temp.setWorkerId(currentUser.getId());
-                ReportsDao.update(temp);
+                ReportsDao.takeForWorker(temp);
                 System.out.println("dziala2");
                 openThreadListFiller();
                 cardLayout.show(mainPanel, "panel1");

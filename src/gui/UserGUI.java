@@ -181,7 +181,7 @@ public class UserGUI extends JFrame {
     private void archiveListFiller(){
         messagePanelTitle.setText("Archiwalne wątki");
         newMessageButton.setVisible(false);
-        archiveReportsList = ReportsArchiveDAO.getReportsByUserID(currentUser.getId());
+        archiveReportsList = ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId());
         messageModel.clear();
         for (ReportsArchive rep : archiveReportsList) {
             messageModel.addElement(rep.getTitle());

@@ -110,8 +110,9 @@ public class ReportsDao {
         if( report.getStartDate() == null){
         }else{
             ReportsArchiveDAO.addReport(report.getUserId(),report.getWorkerId(),report.getTitle(),"0",report.getCategory(),report.getPostDate(),report.getStartDate(),report.getPriority());
+            int lastID = HibernateUtils.getLastID();
             for (Messeges messeges : messageList) {
-                MessagesArchiveDAO.addMessage(HibernateUtils.getLastID(),messeges.getDate(), messeges.getSender(), messeges.getMessage());
+                MessagesArchiveDAO.addMessage(lastID,messeges.getDate(), messeges.getSender(), messeges.getMessage());
             }
         }
 
@@ -131,8 +132,9 @@ public class ReportsDao {
         }
 
     }
-    public static void update(Reports report){
+    public static void takeForWorker(Reports report){
         Session session = HibernateUtils.getSessionFactory().openSession();
+        report.setStartDate(Timestamp.from(Instant.now()));
 
         try{
             session.getTransaction().begin();
