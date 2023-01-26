@@ -46,26 +46,36 @@ public class AnwsersDAO {
             }
         }
         static public ArrayList<Question> searchByTags(String [] tags){
+            ArrayList<ArrayList<Question>> arr = new ArrayList<>();
             ArrayList<Question> qw = anw.getQuestions();
-            ArrayList<Integer> matchingTags = new ArrayList<>(qw.size());
+
             for (int i = 0; i < qw.size(); i++) {
-                matchingTags.add(0);
+                int j = 0;
                 for (String tag : qw.get(i).getTags()) {
+
                     for (String s : tags) {
-                        if(tag.contentEquals(s)) matchingTags.set(i,matchingTags.get(i)+1);
-                        if(s.contentEquals(" "+tag)) matchingTags.set(i,matchingTags.get(i)+1);
+                        if(tag.contentEquals(s)) j++;
+                        if(s.contentEquals(" "+tag)) j++;
                     }
                 }
+                while(arr.size() < j){
+                    arr.add(new ArrayList<>());
+                }
+                if(j>=1){arr.get(j-1).add(qw.get(i));}
             }
             ArrayList<Question> temp = new ArrayList<>();
-            for (int i = 0; i < matchingTags.size(); i++) {
-                    if(matchingTags.get(i) > 0){
-                        temp.add(qw.get(i));
-                    }
+
+            for (int i = arr.size()-1; i >= 0; i--) {
+                for (int i1 = 0; i1 < arr.get(i).size(); i1++) {
+                    temp.add(arr.get(i).get(i1));
+                }
             }
             return temp;
         }
 
+    static public ArrayList<Question> searchByTags(String str){
+            return searchByTags(str.split("\\s+"));
+    }
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -74,7 +84,7 @@ public class AnwsersDAO {
             while(true) {
                 String txt = scanner.nextLine();
                 String[] str = {"drukarka"};
-                ArrayList<Question> temp = searchByTags(txt.split("\\s+"));
+                ArrayList<Question> temp = searchByTags(txt);
                 for (Question question : temp) {
                     System.out.println(question);
                 }
