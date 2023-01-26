@@ -44,6 +44,14 @@ public class WorkerGUI extends JFrame {
     private JList archiveList;
     DefaultListModel archiveModel = (DefaultListModel) archiveList.getModel();
     private JScrollPane scrollPanel4;
+    private JButton searchPanelButton;
+    private JButton searchAddButton;
+    private JTextField searchText;
+    private JButton searchButton;
+    private JScrollPane scrollPanel5;
+    private JPanel searchPanel;
+    private JList searchList;
+    private final DefaultListModel searchModel = (DefaultListModel) searchList.getModel();
 
     //others
     CardLayout cardLayout = new CardLayout();
@@ -57,9 +65,6 @@ public class WorkerGUI extends JFrame {
         setGui();
         this.currentUser = current;
     }
-
-
-
     private void setGui(){
         this.setContentPane(panel);
         this.setMinimumSize(new Dimension(700,500));
@@ -82,8 +87,21 @@ public class WorkerGUI extends JFrame {
         archiveList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
         archiveList.addMouseListener(archiveThreadListMouseListener());
 
+        searchList.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        searchList.setCellRenderer(getCellBorderRenderer());
+        searchList.setFixedCellHeight(-1);
+        searchList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+            }
+        });
+
+
+
         scrollPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         scrollPanel4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        scrollPanel5.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 
         //Card Layout
         mainPanel.setLayout(cardLayout);
@@ -92,6 +110,7 @@ public class WorkerGUI extends JFrame {
         mainPanel.add(messagePanel,"messagePanel");
         mainPanel.add(newMessagePanel,"newMessagePanel");
         mainPanel.add(archivePanel, "archivePanel");
+        mainPanel.add(searchPanel, "searchPanel");
 
         //Buttons
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
@@ -112,6 +131,9 @@ public class WorkerGUI extends JFrame {
             ReportsDao.archive(threadList.get(messageList.getSelectedIndex()));
             threadListFiller();
             cardLayout.show(mainPanel,"panel1");
+        });
+        searchPanelButton.addActionListener(e -> {
+            cardLayout.show(mainPanel,"searchPanel");
         });
 
         backButton.addActionListener(e -> {
@@ -140,6 +162,10 @@ public class WorkerGUI extends JFrame {
         newMessageSendButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         newMessageBackButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         archiwumPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        searchPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        searchButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchAddButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchText.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
 
         homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
         openThreadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(openThreadButton));
@@ -147,6 +173,10 @@ public class WorkerGUI extends JFrame {
         newMessageSendButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageSendButton));
         newMessageBackButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageBackButton));
         archiwumPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(archiwumPanelButton));
+        searchPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchPanelButton));
+        searchButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchButton));
+        searchAddButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchAddButton));
+
     }
     private void threadListFiller(){
         threadTitleText.setText("Wątki w toku");

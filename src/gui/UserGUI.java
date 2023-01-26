@@ -88,6 +88,18 @@ public class UserGUI extends JFrame {
     private int subMessageListIndex = -1;
     private int selectedReportIndex = -1;
     private ArrayList<Question> anwArr;
+    MouseAdapter messageListMouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            messagePanelFiller();
+        }
+    };
+    MouseAdapter archiveMessageListMouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            archiveMessagePanelFiller();
+        }
+    };
 
     UserGUI(Users current){
         currentUser = current;
@@ -317,34 +329,6 @@ public class UserGUI extends JFrame {
               }
           }
       };
-    }
-    MouseAdapter messageListMouseListener = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            messagePanelFiller();
-        }
-    };
-    MouseAdapter archiveMessageListMouseListener = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            archiveMessagePanelFiller();
-        }
-    };
-    private MouseAdapter messageListMouseListener(){
-        return new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                messagePanelFiller();
-            }
-        };
-    }
-    private MouseAdapter archiveMessageListMouseListener(){
-        return new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                archiveMessagePanelFiller();
-            }
-        };
     }
     private DefaultListCellRenderer getCellBorderRenderer() {
         return new DefaultListCellRenderer() {
