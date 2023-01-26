@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
 public class UserGUI extends JFrame {
@@ -69,6 +70,14 @@ public class UserGUI extends JFrame {
     private JTextField searchText;
     private JButton searchButton;
     private JList anwserList;
+    //anwserPanel
+    private JPanel anwserPanel;
+    private JTextArea anwserText;
+    private JLabel searchTitleText;
+    private JLabel searchCategoryText;
+    private JLabel searchIdText;
+    private JLabel searchSubCategoryText;
+    private JScrollPane scrollPanel4;
     private final DefaultListModel anwserModel = (DefaultListModel) anwserList.getModel();
 
     //others
@@ -101,6 +110,7 @@ public class UserGUI extends JFrame {
         mainPanel.add(newMessagePanel, "newMessagePanel");
         mainPanel.add(newThreadPanel, "newThreadPanel");
         mainPanel.add(searchPanel, "searchPanel");
+        mainPanel.add(anwserPanel, "anwserPanel");
 
         //Buttons Listeners
         ActionListener currentActionListener = e -> {
@@ -116,14 +126,16 @@ public class UserGUI extends JFrame {
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
         panel1Button.addActionListener(e -> {
             listFiller();
-            messageList.addMouseListener(messageListMouseListener());
+            messageList.removeMouseListener(archiveMessageListMouseListener);
+            messageList.addMouseListener(messageListMouseListener);
             messageBackButton.removeActionListener(archiveActionListener);
             messageBackButton.addActionListener(currentActionListener);
             cardLayout.show(mainPanel, "panel1");
         });
         panel2Button.addActionListener(e -> {
             archiveListFiller();
-            messageList.addMouseListener(archiveMessageListMouseListener());
+            messageList.removeMouseListener(messageListMouseListener);
+            messageList.addMouseListener(archiveMessageListMouseListener);
             messageBackButton.removeActionListener(currentActionListener);
             messageBackButton.addActionListener(archiveActionListener);
             cardLayout.show(mainPanel,"panel1");
@@ -160,6 +172,13 @@ public class UserGUI extends JFrame {
 
         //searchPanel
         searchButton.addActionListener(e -> search());
+        anwserList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                anwserPanelFiller(anwserList.getSelectedIndex());
+                cardLayout.show(mainPanel,"anwserPanel");
+            }
+        });
     }
 
     private void newThread(){
@@ -193,7 +212,7 @@ public class UserGUI extends JFrame {
     private void archiveListFiller(){
         messagePanelTitle.setText("Archiwalne wątki");
         newMessageButton.setVisible(false);
-        archiveReportsList = ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId());
+        archiveReportsList = ReportsArchiveDAO.getReportsByUserID(currentUser.getId());
         messageModel.clear();
         for (ReportsArchive rep : archiveReportsList) {
             messageModel.addElement(rep.getTitle());
@@ -279,6 +298,14 @@ public class UserGUI extends JFrame {
             anwserModel.addElement(question.getTitle());
         }
     }
+    private void anwserPanelFiller(int id){
+        Question curr = anwArr.get(id);
+        searchIdText.setText("Numer referencyjny: "+curr.getId());
+        searchTitleText.setText(curr.getTitle());
+        searchCategoryText.setText("Kategoria: " + curr.getCategory());
+        searchSubCategoryText.setText("Podkategoria: " + curr.getSubcategory());
+        anwserText.setText(curr.getDescription());
+    }
     private MouseMotionAdapter listMouseMotionListener(JList list){
       return new MouseMotionAdapter(){
           @Override
@@ -291,6 +318,18 @@ public class UserGUI extends JFrame {
           }
       };
     }
+    MouseAdapter messageListMouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            messagePanelFiller();
+        }
+    };
+    MouseAdapter archiveMessageListMouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            archiveMessagePanelFiller();
+        }
+    };
     private MouseAdapter messageListMouseListener(){
         return new MouseAdapter() {
             @Override
@@ -377,6 +416,8 @@ public class UserGUI extends JFrame {
         anwserList.setCellRenderer(getCellBorderRenderer());
         anwserList.setFixedCellHeight(-1);
         anwserList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
+        scrollPanel4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        anwserText.setLineWrap(true);
 
         //Buttons design
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
