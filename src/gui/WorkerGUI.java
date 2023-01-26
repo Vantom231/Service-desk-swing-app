@@ -67,6 +67,11 @@ public class WorkerGUI extends JFrame {
     private JLabel searchIdText;
     private JLabel searchSubcategoryText;
     private JTextField tagsField;
+    private JLabel currentUsername;
+    private JLabel welcomeText;
+    private JLabel openThreadsCount;
+    private JLabel currentThreadsCount;
+    private JLabel archivedThreadsCount;
     private final DefaultListModel searchModel = (DefaultListModel) searchList.getModel();
 
     //others
@@ -79,8 +84,8 @@ public class WorkerGUI extends JFrame {
 
 
     WorkerGUI(Users current){
-        setGui();
         this.currentUser = current;
+        setGui();
     }
     private void setGui(){
         this.setContentPane(panel);
@@ -88,6 +93,13 @@ public class WorkerGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+        //welcome page
+        currentUsername.setText(currentUser.getUsername());
+        welcomeText.setText("Witaj " + currentUser.getUsername());
+        openThreadsCount.setText("Liczba wątków dostępnych: " + ReportsDao.getOpenReports().size());
+        currentThreadsCount.setText("Liczba wątków w trakcie: " + ReportsDao.getReportsByWorkerID(currentUser.getId()).size());
+        archivedThreadsCount.setText("Liczba wątków zakończonych: " + ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId()).size());
 
         //Card Layout
         mainPanel.setLayout(cardLayout);
