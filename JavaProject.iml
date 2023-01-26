@@ -22,5 +22,6 @@
     <orderEntry type="library" name="Hibernate 5.4.11-5.4.11" level="project" />
     <orderEntry type="library" name="mysql.connector.java" level="project" />
     <orderEntry type="library" name="github.davidmoten.word.wrap" level="project" />
+    <orderEntry type="library" name="google.code.gson" level="project" />
   </component>
 </module>
