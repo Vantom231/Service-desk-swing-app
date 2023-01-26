@@ -1,0 +1,55 @@
+{
+  "lastId": 4,
+  "questions": [
+    {
+      "idNumber": 1,
+      "category": "hardware",
+      "subcategory": "print",
+      "title": "Zacięcie papieru w drukarce",
+      "description": "Wyłącz drukarkę, w miarę możliwości usuń zakleszczony arkusz papieru. Zrób to jednak z dużą delikatnością i ostrożnością, sprawdzając na koniec, czy papier usunięty został w całości. Jeśli w drukarce zostałby choć fragment papieru, mogłoby to spowodować dalsze zacinanie się kartek.nigdy nie ciągnij papieru na siłę, ani nie używaj do wyciągania kartki żadnych przedmiotów typu nóż, nożyczki, czy śrubokręt. Jeśli nie możesz tego zrobić zgłoś ten problem na servicedesk.",
+      "tags": [
+        "drukarka",
+        "papier",
+        "zacięcie"
+      ]
+    },
+    {
+      "idNumber": 2,
+      "category": "hardware",
+      "subcategory": "print",
+      "title": "Wymiana tonera w drukarce",
+      "description": "Wyłącz drukarkę. Wyjmij stary toner z drukarki. Wyjmij nowy toner z opakowania. Potrząśnij tonerem. Usuń elementy ochronne. Włóż nowy toner do drukarki. Włącz drukarkę i wydrukuj stronę",
+      "tags": [
+        "drukarka",
+        "toner",
+        "wymiana"
+      ]
+    },
+    {
+      "idNumber": 3,
+      "category": "software",
+      "subcategory": "windows",
+      "title": "Aktualizacja systemu Windows 11",
+      "description": "Aby sprawdzić dostępność aktualizacji, wybierz pozycję Start - Ustawienia - Windows Update , a następnie wybierz pozycję Sprawdź aktualizacje. Jeśli są dostępne aktualizacje, możesz je zainstalować.",
+      "tags": [
+        "windows",
+        "aktualizacja",
+        "update",
+        "11"
+      ]
+    },
+    {
+      "idNumber": 4,
+      "category": "software",
+      "subcategory": "windows",
+      "title": "Aktualizacja systemu Windows 10",
+      "description": "Aby od razu zainstalować aktualizację, wybierz pozycję Start - Ustawienia - Aktualizacje i zabezpieczenia - Windows Update , a następnie wybierz pozycję Sprawdź, czy są dostępne aktualizacje. Jeśli są dostępne aktualizacje, zainstaluj je.",
+      "tags": [
+        "windows",
+        "aktualizacja",
+        "update",
+        "10"
+      ]
+    }
+  ]
+}

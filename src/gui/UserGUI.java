@@ -9,6 +9,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
 public class UserGUI extends JFrame {
@@ -17,6 +20,7 @@ public class UserGUI extends JFrame {
     private JButton homeButton;
     private JButton panel2Button;
     private JButton panel1Button;
+    private JButton searchPanelButton;
     private JPanel mainPanel;
 
     //home panel
@@ -61,6 +65,20 @@ public class UserGUI extends JFrame {
     private JButton button4;
     private JScrollPane scrollpane4;
     private JLabel messagePanelTitle;
+    //search Panel
+    private JPanel searchPanel;
+    private JTextField searchText;
+    private JButton searchButton;
+    private JList anwserList;
+    //anwserPanel
+    private JPanel anwserPanel;
+    private JTextArea anwserText;
+    private JLabel searchTitleText;
+    private JLabel searchCategoryText;
+    private JLabel searchIdText;
+    private JLabel searchSubCategoryText;
+    private JScrollPane scrollPanel4;
+    private final DefaultListModel anwserModel = (DefaultListModel) anwserList.getModel();
 
     //others
     private static Users currentUser = null;
@@ -69,6 +87,19 @@ public class UserGUI extends JFrame {
     private final CardLayout cardLayout = new CardLayout();
     private int subMessageListIndex = -1;
     private int selectedReportIndex = -1;
+    private ArrayList<Question> anwArr;
+    MouseAdapter messageListMouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            messagePanelFiller();
+        }
+    };
+    MouseAdapter archiveMessageListMouseListener = new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            archiveMessagePanelFiller();
+        }
+    };
 
     UserGUI(Users current){
         currentUser = current;
@@ -90,13 +121,14 @@ public class UserGUI extends JFrame {
         mainPanel.add(messagePanel, "messagePanel");
         mainPanel.add(newMessagePanel, "newMessagePanel");
         mainPanel.add(newThreadPanel, "newThreadPanel");
+        mainPanel.add(searchPanel, "searchPanel");
+        mainPanel.add(anwserPanel, "anwserPanel");
 
         //Buttons Listeners
         ActionListener currentActionListener = e -> {
             listFiller();
             cardLayout.show(mainPanel, "panel1");
         };
-
         ActionListener archiveActionListener = e -> {
             archiveListFiller();
             cardLayout.show(mainPanel, "panel1");
@@ -104,21 +136,25 @@ public class UserGUI extends JFrame {
 
         //menu
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
-
         panel1Button.addActionListener(e -> {
             listFiller();
-            messageList.addMouseListener(messageListMouseListener());
+            messageList.removeMouseListener(archiveMessageListMouseListener);
+            messageList.addMouseListener(messageListMouseListener);
             messageBackButton.removeActionListener(archiveActionListener);
             messageBackButton.addActionListener(currentActionListener);
             cardLayout.show(mainPanel, "panel1");
         });
-
         panel2Button.addActionListener(e -> {
             archiveListFiller();
-            messageList.addMouseListener(archiveMessageListMouseListener());
+            messageList.removeMouseListener(messageListMouseListener);
+            messageList.addMouseListener(archiveMessageListMouseListener);
             messageBackButton.removeActionListener(currentActionListener);
             messageBackButton.addActionListener(archiveActionListener);
             cardLayout.show(mainPanel,"panel1");
+        });
+        searchPanelButton.addActionListener(e -> {
+            searchPanelFiller();
+            cardLayout.show(mainPanel,"searchPanel");
         });
 
         //newMessage Panel
@@ -126,7 +162,6 @@ public class UserGUI extends JFrame {
 
         //subMessagePanel
         newSubMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newMessagePanel"));
-
         archiveButton.addActionListener(e -> {
             ReportsDao.archive(reportsList.get(messageList.getSelectedIndex()));
             listFiller();
@@ -135,7 +170,6 @@ public class UserGUI extends JFrame {
 
         //newMessagePanel
         backToSubMessageButton.addActionListener(e -> messagePanelFiller());
-
         sendNewMessageButton.addActionListener(e -> {
             MessagesDAO.addMessage(selectedReportIndex,0,newMessageTextPane.getText());
             messagePanelFiller();
@@ -146,8 +180,17 @@ public class UserGUI extends JFrame {
             listFiller();
             cardLayout.show(mainPanel,"panel1");
         });
-
         newThreadSendButton.addActionListener(e -> newThread());
+
+        //searchPanel
+        searchButton.addActionListener(e -> search());
+        anwserList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                anwserPanelFiller(anwserList.getSelectedIndex());
+                cardLayout.show(mainPanel,"anwserPanel");
+            }
+        });
     }
 
     private void newThread(){
@@ -181,13 +224,12 @@ public class UserGUI extends JFrame {
     private void archiveListFiller(){
         messagePanelTitle.setText("Archiwalne wątki");
         newMessageButton.setVisible(false);
-        archiveReportsList = ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId());
+        archiveReportsList = ReportsArchiveDAO.getReportsByUserID(currentUser.getId());
         messageModel.clear();
         for (ReportsArchive rep : archiveReportsList) {
             messageModel.addElement(rep.getTitle());
         }
     }
-
     private void messagePanelFiller(){
         String workerName = "";
         Reports temp = reportsList.get(messageList.getSelectedIndex());
@@ -248,7 +290,34 @@ public class UserGUI extends JFrame {
         }
         cardLayout.show(mainPanel,"messagePanel");
     }
-
+    private void searchPanelFiller(){
+        anwserModel.clear();
+        try {
+            AnwsersDAO.load();
+            searchButton.setEnabled(true);
+            searchText.setEditable(true);
+            searchText.setText("");
+        }catch(FileNotFoundException e){
+            searchButton.setEnabled(false);
+            searchText.setEditable(false);
+            searchText.setText("wyszukiwanie nie dostępne");
+        }
+    }
+    private void search(){
+        anwserModel.clear();
+        anwArr = AnwsersDAO.searchByTags(searchText.getText());
+        for (Question question : anwArr) {
+            anwserModel.addElement(question.getTitle());
+        }
+    }
+    private void anwserPanelFiller(int id){
+        Question curr = anwArr.get(id);
+        searchIdText.setText("Numer referencyjny: "+curr.getId());
+        searchTitleText.setText(curr.getTitle());
+        searchCategoryText.setText("Kategoria: " + curr.getCategory());
+        searchSubCategoryText.setText("Podkategoria: " + curr.getSubcategory());
+        anwserText.setText(curr.getDescription());
+    }
     private MouseMotionAdapter listMouseMotionListener(JList list){
       return new MouseMotionAdapter(){
           @Override
@@ -260,23 +329,6 @@ public class UserGUI extends JFrame {
               }
           }
       };
-    }
-
-    private MouseAdapter messageListMouseListener(){
-        return new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                messagePanelFiller();
-            }
-        };
-    }
-    private MouseAdapter archiveMessageListMouseListener(){
-        return new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                archiveMessagePanelFiller();
-            }
-        };
     }
     private DefaultListCellRenderer getCellBorderRenderer() {
         return new DefaultListCellRenderer() {
@@ -302,7 +354,6 @@ public class UserGUI extends JFrame {
             }
         };
     }
-
     private void setBoxCellBorder(JComboBox categoryBox) {
         for (int i = 0; i < categoryBox.getComponentCount(); i++)
         {
@@ -343,10 +394,20 @@ public class UserGUI extends JFrame {
         newTitleText.setBorder(BorderFactory.createEmptyBorder(5,3,5,3));
         categoryBox.setBorder(BorderFactory.createEmptyBorder(5,3,5,3));
         setBoxCellBorder(categoryBox);
+
+        //searchPanel
+        searchText.setBorder(BorderFactory.createEmptyBorder(5,3,5,3));
+        anwserList.setCellRenderer(getCellBorderRenderer());
+        anwserList.setFixedCellHeight(-1);
+        anwserList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
+        scrollPanel4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        anwserText.setLineWrap(true);
+
         //Buttons design
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         panel1Button.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         panel2Button.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        searchPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         newMessageButton.setBorder(BorderFactory.createEmptyBorder(7,10,10,10));
         messageBackButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         newSubMessageButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
@@ -355,6 +416,7 @@ public class UserGUI extends JFrame {
         sendNewMessageButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         newThreadBackButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         newThreadSendButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
         panel1Button.addMouseListener(DesignHandlers.getButtonMouseAdapter(panel1Button));
         panel2Button.addMouseListener(DesignHandlers.getButtonMouseAdapter(panel2Button));
@@ -366,7 +428,7 @@ public class UserGUI extends JFrame {
         sendNewMessageButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(sendNewMessageButton));
         newThreadSendButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newThreadSendButton));
         newThreadBackButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newThreadBackButton));
+        searchButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchButton));
+        searchPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchPanelButton));
     }
-
-
 }
