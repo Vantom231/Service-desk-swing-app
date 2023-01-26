@@ -167,10 +167,18 @@ public class UserGUI extends JFrame {
         });
 
         //newMessage Panel
-        newMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newThreadPanel"));
+        newMessageButton.addActionListener(e -> {
+            newTitleText.setText("");
+            categoryBox.setSelectedIndex(0);
+            newThreadText.setText("");
+            cardLayout.show(mainPanel,"newThreadPanel");
+        });
 
         //subMessagePanel
-        newSubMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newMessagePanel"));
+        newSubMessageButton.addActionListener(e -> {
+            newMessageTextPane.setText("");
+            cardLayout.show(mainPanel,"newMessagePanel");
+        });
         archiveButton.addActionListener(e -> {
             ReportsDao.archive(reportsList.get(messageList.getSelectedIndex()));
             listFiller();
