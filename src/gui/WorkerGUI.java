@@ -9,6 +9,9 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkerGUI extends JFrame {
@@ -51,6 +54,19 @@ public class WorkerGUI extends JFrame {
     private JScrollPane scrollPanel5;
     private JPanel searchPanel;
     private JList searchList;
+    private JPanel anwserAddPanel;
+    private JTextField searchTitleField;
+    private JTextField searchCategoryField;
+    private JTextField searchSubCategoryField;
+    private JTextArea searchDescriptionField;
+    private JButton searchSaveButton;
+    private JPanel anwserPanel;
+    private JTextArea searchDescriptionText;
+    private JLabel searchTitleText;
+    private JLabel searchCategoryText;
+    private JLabel searchIdText;
+    private JLabel searchSubcategoryText;
+    private JTextField tagsField;
     private final DefaultListModel searchModel = (DefaultListModel) searchList.getModel();
 
     //others
@@ -59,6 +75,7 @@ public class WorkerGUI extends JFrame {
     private List<Reports> threadList;
     private List<ReportsArchive> archiveThreadList;
     private int listIndex = -1;
+    ArrayList<Question> qArr;
 
 
     WorkerGUI(Users current){
@@ -71,6 +88,17 @@ public class WorkerGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+        //Card Layout
+        mainPanel.setLayout(cardLayout);
+        mainPanel.add(homePanel,"home");
+        mainPanel.add(panel1,"panel1");
+        mainPanel.add(messagePanel,"messagePanel");
+        mainPanel.add(newMessagePanel,"newMessagePanel");
+        mainPanel.add(archivePanel, "archivePanel");
+        mainPanel.add(searchPanel, "searchPanel");
+        mainPanel.add(anwserAddPanel, "anwserAddPanel");
+        mainPanel.add(anwserPanel, "anwserPanel");
 
         scrollPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         messageList.setCellRenderer(getCellBorderRenderer());
@@ -93,7 +121,8 @@ public class WorkerGUI extends JFrame {
         searchList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
+                anwserFiller(searchList.getSelectedIndex());
+                cardLayout.show(mainPanel, "anwserPanel");
             }
         });
 
@@ -103,14 +132,7 @@ public class WorkerGUI extends JFrame {
         scrollPanel4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         scrollPanel5.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 
-        //Card Layout
-        mainPanel.setLayout(cardLayout);
-        mainPanel.add(homePanel,"home");
-        mainPanel.add(panel1,"panel1");
-        mainPanel.add(messagePanel,"messagePanel");
-        mainPanel.add(newMessagePanel,"newMessagePanel");
-        mainPanel.add(archivePanel, "archivePanel");
-        mainPanel.add(searchPanel, "searchPanel");
+
 
         //Buttons
         homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
@@ -133,6 +155,7 @@ public class WorkerGUI extends JFrame {
             cardLayout.show(mainPanel,"panel1");
         });
         searchPanelButton.addActionListener(e -> {
+            searchFiller();
             cardLayout.show(mainPanel,"searchPanel");
         });
 
@@ -155,6 +178,23 @@ public class WorkerGUI extends JFrame {
             archiveListFiller();
             cardLayout.show(mainPanel,"archivePanel");
         });
+        searchButton.addActionListener(e -> search());
+        searchAddButton.addActionListener(e -> cardLayout.show(mainPanel,"anwserAddPanel"));
+        searchSaveButton.addActionListener(e -> {
+            Question temp = new Question(AnwsersDAO.getLastId()+1,
+                    searchCategoryField.getText(),
+                    searchSubCategoryField.getText(),
+                    searchTitleField.getText(),
+                    searchDescriptionField.getText(),
+                    stringToTable(tagsField.getText()));
+            try {
+                AnwsersDAO.addQuestion(temp);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null,"nie udało się wstawić odpowiedzi");
+            }
+            searchFiller();
+            cardLayout.show(mainPanel, "searchPanel");
+        });
 
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         openThreadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
@@ -166,6 +206,12 @@ public class WorkerGUI extends JFrame {
         searchButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         searchAddButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         searchText.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchCategoryField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchSubCategoryField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchTitleField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchDescriptionField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchSaveButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        tagsField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
 
         homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
         openThreadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(openThreadButton));
@@ -176,6 +222,7 @@ public class WorkerGUI extends JFrame {
         searchPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchPanelButton));
         searchButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchButton));
         searchAddButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchAddButton));
+        searchSaveButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchSaveButton));
 
     }
     private void threadListFiller(){
@@ -204,6 +251,46 @@ public class WorkerGUI extends JFrame {
         for (ReportsArchive reportsArchive : archiveThreadList) {
             archiveModel.addElement(reportsArchive.getTitle());
         }
+    }
+    private void searchFiller(){
+
+        try {
+            AnwsersDAO.load();
+            searchModel.clear();
+
+            searchButton.setEnabled(true);
+            searchText.setEditable(true);
+            searchAddButton.setEnabled(true);
+            searchText.setText("");
+        } catch (FileNotFoundException e) {
+            searchButton.setEnabled(false);
+            searchText.setEditable(false);
+            searchAddButton.setEnabled(false);
+            searchText.setText("Wyszukiwanie nie dostępne");
+        }
+    }
+    private void search(){
+        qArr = AnwsersDAO.searchByTags(searchText.getText());
+        searchModel.clear();
+
+        for (Question question : qArr) {
+            searchModel.addElement(question.getTitle());
+        }
+    }
+    private void anwserFiller(int index){
+        Question curr = qArr.get(index);
+        searchTitleText.setText("Tytuł: "+ curr.getTitle());
+        searchCategoryText.setText("Kategoria: "+curr.getCategory());
+        searchSubcategoryText.setText("Podkategoria: " + curr.getSubcategory());
+        searchIdText.setText("Numer referencyjny: " +curr.getId());
+        searchDescriptionText.setText(curr.getDescription());
+    }
+    private String [] stringToTable(String str){
+        String [] temp = str.split("\\s+");
+        for (int i = 1; i < temp.length; i++) {
+//            temp[i] = temp[i].substring(1);
+        }
+        return temp;
     }
     private MouseAdapter threadListMouseListener(boolean activeThread) {
         return new MouseAdapter() {
