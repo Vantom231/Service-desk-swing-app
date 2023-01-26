@@ -9,6 +9,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserGUI extends JFrame {
@@ -17,6 +19,7 @@ public class UserGUI extends JFrame {
     private JButton homeButton;
     private JButton panel2Button;
     private JButton panel1Button;
+    private JButton searchPanelButton;
     private JPanel mainPanel;
 
     //home panel
@@ -61,11 +64,12 @@ public class UserGUI extends JFrame {
     private JButton button4;
     private JScrollPane scrollpane4;
     private JLabel messagePanelTitle;
+    //search Panel
     private JPanel searchPanel;
-    private JButton searchPanelButton;
     private JTextField searchText;
     private JButton searchButton;
     private JList anwserList;
+    private final DefaultListModel anwserModel = (DefaultListModel) anwserList.getModel();
 
     //others
     private static Users currentUser = null;
@@ -74,6 +78,7 @@ public class UserGUI extends JFrame {
     private final CardLayout cardLayout = new CardLayout();
     private int subMessageListIndex = -1;
     private int selectedReportIndex = -1;
+    private ArrayList<Question> anwArr;
 
     UserGUI(Users current){
         currentUser = current;
@@ -123,7 +128,10 @@ public class UserGUI extends JFrame {
             messageBackButton.addActionListener(archiveActionListener);
             cardLayout.show(mainPanel,"panel1");
         });
-        searchPanelButton.addActionListener(e -> cardLayout.show(mainPanel,"searchPanel"));
+        searchPanelButton.addActionListener(e -> {
+            searchPanelFiller();
+            cardLayout.show(mainPanel,"searchPanel");
+        });
 
         //newMessage Panel
         newMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newThreadPanel"));
@@ -149,6 +157,9 @@ public class UserGUI extends JFrame {
             cardLayout.show(mainPanel,"panel1");
         });
         newThreadSendButton.addActionListener(e -> newThread());
+
+        //searchPanel
+        searchButton.addActionListener(e -> search());
     }
 
     private void newThread(){
@@ -248,6 +259,26 @@ public class UserGUI extends JFrame {
         }
         cardLayout.show(mainPanel,"messagePanel");
     }
+    private void searchPanelFiller(){
+        anwserModel.clear();
+        try {
+            AnwsersDAO.load();
+            searchButton.setEnabled(true);
+            searchText.setEditable(true);
+            searchText.setText("");
+        }catch(FileNotFoundException e){
+            searchButton.setEnabled(false);
+            searchText.setEditable(false);
+            searchText.setText("wyszukiwanie nie dostępne");
+        }
+    }
+    private void search(){
+        anwserModel.clear();
+        anwArr = AnwsersDAO.searchByTags(searchText.getText());
+        for (Question question : anwArr) {
+            anwserModel.addElement(question.getTitle());
+        }
+    }
     private MouseMotionAdapter listMouseMotionListener(JList list){
       return new MouseMotionAdapter(){
           @Override
@@ -346,6 +377,7 @@ public class UserGUI extends JFrame {
         anwserList.setCellRenderer(getCellBorderRenderer());
         anwserList.setFixedCellHeight(-1);
         anwserList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
+
         //Buttons design
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         panel1Button.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));

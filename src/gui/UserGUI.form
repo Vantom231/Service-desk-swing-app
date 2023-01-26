@@ -687,6 +687,8 @@
                     <properties>
                       <background color="-11184811"/>
                       <caretColor color="-3355444"/>
+                      <editable value="false"/>
+                      <enabled value="true"/>
                       <foreground color="-3355444"/>
                       <visible value="true"/>
                     </properties>
