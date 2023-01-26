@@ -65,6 +65,7 @@
             </constraints>
             <properties>
               <background color="-13089707"/>
+              <font name="JetBrains Mono" size="14" style="0"/>
               <foreground color="-3355444"/>
               <text value="home"/>
             </properties>
@@ -75,6 +76,7 @@
             </constraints>
             <properties>
               <background color="-13089707"/>
+              <font name="JetBrains Mono" size="14" style="0"/>
               <foreground color="-3355444"/>
               <text value="Wątki oczekujące"/>
             </properties>
@@ -85,6 +87,7 @@
             </constraints>
             <properties>
               <background color="-13089707"/>
+              <font name="JetBrains Mono" size="14" style="0"/>
               <foreground color="-3355444"/>
               <text value="Wątki w toku"/>
             </properties>
@@ -100,6 +103,7 @@
             </constraints>
             <properties>
               <background color="-13089707"/>
+              <font name="JetBrains Mono" size="14" style="0"/>
               <foreground color="-3355444"/>
               <text value="Archiwum"/>
             </properties>
@@ -110,6 +114,7 @@
             </constraints>
             <properties>
               <background color="-13089707"/>
+              <font name="JetBrains Mono" size="14" style="0"/>
               <foreground color="-3355444"/>
               <text value="Wyszukiwarka"/>
             </properties>
@@ -238,6 +243,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <font name="JetBrains Mono" size="14" style="1"/>
                   <foreground color="-3355444"/>
                   <text value="Wątki w toku"/>
                 </properties>
@@ -253,6 +259,7 @@
                     <constraints/>
                     <properties>
                       <background color="-10066330"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <model>
                         <item value="test01"/>
@@ -290,6 +297,7 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -299,6 +307,7 @@
                       <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -325,6 +334,8 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <enabled value="true"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -334,6 +345,7 @@
                       <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -364,6 +376,7 @@
                         <constraints/>
                         <properties>
                           <background color="-10066330"/>
+                          <font name="JetBrains Mono" size="12" style="0"/>
                           <foreground color="-3355444"/>
                           <model>
                             <item value="test01"/>
@@ -391,6 +404,7 @@
                     </constraints>
                     <properties>
                       <background color="-13089707"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="powrót"/>
                     </properties>
@@ -401,6 +415,7 @@
                     </constraints>
                     <properties>
                       <background color="-13089707"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Zamknij Wątek"/>
                     </properties>
@@ -411,6 +426,7 @@
                     </constraints>
                     <properties>
                       <background color="-13089707"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Nowa Wiadomość"/>
                     </properties>
@@ -450,6 +466,8 @@
                     </constraints>
                     <properties>
                       <background color="-3355444"/>
+                      <font name="JetBrains Mono" size="14" style="1"/>
+                      <foreground color="-3355444"/>
                       <text value="Nowa Wiadomość"/>
                     </properties>
                   </component>
@@ -477,6 +495,7 @@
                         <properties>
                           <background color="-11184811"/>
                           <caretColor color="-3355444"/>
+                          <font name="JetBrains Mono" size="12" style="0"/>
                           <foreground color="-3355444"/>
                         </properties>
                       </component>
@@ -508,6 +527,7 @@
                         </constraints>
                         <properties>
                           <background color="-13089707"/>
+                          <font name="JetBrains Mono" size="12" style="0"/>
                           <foreground color="-3355444"/>
                           <text value="powrót"/>
                         </properties>
@@ -551,6 +571,8 @@
                         </constraints>
                         <properties>
                           <background color="-13089707"/>
+                          <enabled value="true"/>
+                          <font name="JetBrains Mono" size="12" style="0"/>
                           <foreground color="-3355444"/>
                           <text value="Wyślij"/>
                         </properties>
@@ -581,6 +603,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <font name="JetBrains Mono" size="14" style="1"/>
                   <foreground color="-3355444"/>
                   <text value="Wątki Archiwalne"/>
                 </properties>
@@ -596,6 +619,7 @@
                     <constraints/>
                     <properties>
                       <background color="-10066330"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <model>
                         <item value="test01"/>
@@ -636,6 +660,7 @@
                     <properties>
                       <background color="-11184811"/>
                       <caretColor color="-3355444"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                     </properties>
                   </component>
@@ -645,6 +670,7 @@
                     </constraints>
                     <properties>
                       <background color="-13089707"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Szukaj"/>
                     </properties>
@@ -674,6 +700,7 @@
                         <constraints/>
                         <properties>
                           <background color="-10066330"/>
+                          <font name="JetBrains Mono" size="12" style="0"/>
                           <foreground color="-3355444"/>
                           <model>
                             <item value="case1"/>
@@ -702,6 +729,7 @@
                     </constraints>
                     <properties>
                       <background color="-13089707"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="dodaj wpis"/>
                     </properties>
@@ -760,6 +788,7 @@
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
+                              <font name="JetBrains Mono" size="12" style="0"/>
                               <foreground color="-3355444"/>
                               <text value="Temat"/>
                             </properties>
@@ -781,6 +810,7 @@
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
+                              <font name="JetBrains Mono" size="12" style="0"/>
                               <foreground color="-3355444"/>
                               <text value="Kategoria"/>
                             </properties>
@@ -802,6 +832,7 @@
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
+                              <font name="JetBrains Mono" size="12" style="0"/>
                               <foreground color="-3355444"/>
                               <text value="PodKategoria"/>
                             </properties>
@@ -839,6 +870,7 @@
                             <properties>
                               <background color="-11184811"/>
                               <caretColor color="-3355444"/>
+                              <font name="JetBrains Mono" size="12" style="0"/>
                               <foreground color="-3355444"/>
                             </properties>
                           </component>
@@ -863,6 +895,7 @@
                             <properties>
                               <background color="-11184811"/>
                               <caretColor color="-3355444"/>
+                              <font name="JetBrains Mono" size="12" style="0"/>
                               <foreground color="-3355444"/>
                             </properties>
                           </component>
@@ -923,6 +956,7 @@
                         <properties>
                           <background color="-10066330"/>
                           <caretColor color="-3355444"/>
+                          <font name="JetBrains Mono" size="12" style="0"/>
                           <foreground color="-3355444"/>
                           <lineWrap value="true"/>
                         </properties>
@@ -951,6 +985,7 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Tagi: "/>
                     </properties>
@@ -964,6 +999,7 @@
                     <properties>
                       <background color="-11184811"/>
                       <caretColor color="-3355444"/>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                     </properties>
                   </component>
@@ -975,6 +1011,7 @@
                 </constraints>
                 <properties>
                   <background color="-13089707"/>
+                  <font name="JetBrains Mono" size="12" style="0"/>
                   <foreground color="-3355444"/>
                   <text value="Zapisz"/>
                 </properties>
@@ -1006,6 +1043,7 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -1015,6 +1053,7 @@
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -1036,6 +1075,7 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -1045,6 +1085,7 @@
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
+                      <font name="JetBrains Mono" size="12" style="0"/>
                       <foreground color="-3355444"/>
                       <text value="Label"/>
                     </properties>
@@ -1076,6 +1117,7 @@
                         <properties>
                           <background color="-10066330"/>
                           <caretColor color="-3355444"/>
+                          <font name="JetBrains Mono" size="12" style="0"/>
                           <foreground color="-3355444"/>
                           <lineWrap value="true"/>
                         </properties>
