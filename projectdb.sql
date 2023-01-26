@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 07 Sty 2023, 22:51
--- Wersja serwera: 10.4.25-MariaDB
--- Wersja PHP: 8.1.10
+-- Czas generowania: 08 Sty 2023, 16:38
+-- Wersja serwera: 10.4.27-MariaDB
+-- Wersja PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,7 +33,7 @@ CREATE TABLE `messages_archive` (
   `date` datetime NOT NULL,
   `sender` int(11) NOT NULL,
   `message` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Zrzut danych tabeli `messages_archive`
@@ -58,7 +58,7 @@ CREATE TABLE `messeges` (
   `date` datetime NOT NULL,
   `sender` int(11) NOT NULL,
   `message` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Zrzut danych tabeli `messeges`
@@ -89,7 +89,7 @@ CREATE TABLE `reports` (
   `start_date` datetime DEFAULT NULL,
   `close_date` datetime DEFAULT NULL,
   `priority` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Zrzut danych tabeli `reports`
@@ -116,14 +116,14 @@ CREATE TABLE `reports_archive` (
   `start_date` datetime DEFAULT NULL,
   `close_date` datetime DEFAULT NULL,
   `priority` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Zrzut danych tabeli `reports_archive`
 --
 
 INSERT INTO `reports_archive` (`id`, `user_id`, `worker_id`, `title`, `status`, `category`, `post_date`, `start_date`, `close_date`, `priority`) VALUES
-(1, 1, 2, 'tytul archiwalny 1', '1', 'testCat', '2022-12-17 22:53:22', '0000-00-00 00:00:00', '2022-12-17 22:53:24', 0),
+(1, 1, 2, 'tytul archiwalny 1', '1', 'testCat', '2022-12-17 22:53:22', '2023-01-08 16:37:29', '2022-12-17 22:53:24', 0),
 (2, 3, 4, 'tytul archiwalny 2', '1', 'testCat2', '2022-12-17 22:59:50', '2022-12-17 22:59:50', '2022-12-17 22:59:50', 0),
 (3, 1, 2, 'report do zarchiwizowania', '0', 'cat1', '2023-01-06 17:29:48', '2023-01-06 17:29:48', '2023-01-06 17:31:53', 0);
 
@@ -140,7 +140,7 @@ CREATE TABLE `users` (
   `account_lvl` int(11) NOT NULL,
   `email` text NOT NULL,
   `status` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Zrzut danych tabeli `users`

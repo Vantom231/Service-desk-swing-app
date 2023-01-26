@@ -91,7 +91,7 @@ public class Main extends JFrame{
             System.out.println();
             System.out.println("Zalogowano na:");
             System.out.println(user.toString());
-            if(user.getAccountLvl() == 1) new WorkerGUI();
+            if(user.getAccountLvl() == 1) new WorkerGUI(user);
             else new UserGUI(user);
             this.dispose();
         }catch(IndexOutOfBoundsException e){

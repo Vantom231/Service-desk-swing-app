@@ -59,17 +59,7 @@ public class Registration extends JFrame{
         returnButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         submitButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
 
-        for (int i = 0; i < roleBox.getComponentCount(); i++)
-        {
-            if (roleBox.getComponent(i) instanceof JComponent) {
-                ((JComponent) roleBox.getComponent(i)).setBorder(new EmptyBorder(0, 0,0,0));
-            }
-
-
-            if (roleBox.getComponent(i) instanceof AbstractButton) {
-                ((AbstractButton) roleBox.getComponent(i)).setBorderPainted(false);
-            }
-        }
+        setBoxCellBorder(roleBox);
 
         //changing caret color
         loginField.setCaretColor(Color.white);
@@ -82,5 +72,17 @@ public class Registration extends JFrame{
             new Main();
             this.dispose();
         });
+    }
+    private void setBoxCellBorder(JComboBox categoryBox) {
+        for (int i = 0; i < categoryBox.getComponentCount(); i++)
+        {
+            if (categoryBox.getComponent(i) instanceof JComponent) {
+                ((JComponent) categoryBox.getComponent(i)).setBorder(new EmptyBorder(0, 0,0,0));
+            }
+
+            if (categoryBox.getComponent(i) instanceof AbstractButton) {
+                ((AbstractButton) categoryBox.getComponent(i)).setBorderPainted(false);
+            }
+        }
     }
 }

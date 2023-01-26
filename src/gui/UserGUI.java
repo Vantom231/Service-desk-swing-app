@@ -68,7 +68,7 @@ public class UserGUI extends JFrame {
     private List<ReportsArchive> archiveReportsList = null;
     private final CardLayout cardLayout = new CardLayout();
     private int subMessageListIndex = -1;
-    private int selectedReportIndex = 0;
+    private int selectedReportIndex = -1;
 
     UserGUI(Users current){
         currentUser = current;
@@ -181,7 +181,7 @@ public class UserGUI extends JFrame {
     private void archiveListFiller(){
         messagePanelTitle.setText("Archiwalne wątki");
         newMessageButton.setVisible(false);
-        archiveReportsList = ReportsArchiveDAO.getReportsByUserID(currentUser.getId());
+        archiveReportsList = ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId());
         messageModel.clear();
         for (ReportsArchive rep : archiveReportsList) {
             messageModel.addElement(rep.getTitle());
@@ -207,7 +207,8 @@ public class UserGUI extends JFrame {
         }catch(NullPointerException en){
             workerText.setText("zgłoszenie w trakcie rozpatrywania");
         }
-
+        subMessageListIndex = -1;
+        subMessageList.repaint();
         subMessageModel.clear();
         List<Messeges> allMessages = MessagesDAO.getAllMessagesByReportID(temp.getId());
         for (Messeges mess : allMessages) {
@@ -233,6 +234,9 @@ public class UserGUI extends JFrame {
         String workerName = UsersDAO.getUserNameByID(temp.getWorkerId());
         workerText.setText("Serwisant: " + workerName);
 
+        subMessageListIndex = -1;
+        subMessageList.repaint();
+
         subMessageModel.clear();
         List<MessagesArchive> allMessages = MessagesArchiveDAO.getAllMessagesByReportID(temp.getId());
         for (MessagesArchive mess : allMessages) {
@@ -243,21 +247,6 @@ public class UserGUI extends JFrame {
             subMessageModel.addElement(str);
         }
         cardLayout.show(mainPanel,"messagePanel");
-    }
-
-    private MouseAdapter buttonMouseAdapter(JButton bt){
-        MouseAdapter temp = new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                bt.setBackground(Color.decode("#485566"));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                bt.setBackground(Color.decode("#384455"));
-            }
-        };
-        return temp;
     }
 
     private MouseMotionAdapter listMouseMotionListener(JList list){
@@ -289,8 +278,7 @@ public class UserGUI extends JFrame {
             }
         };
     }
-
-    private DefaultListCellRenderer cellBorderRenderer(){
+    private DefaultListCellRenderer getCellBorderRenderer() {
         return new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -299,27 +287,39 @@ public class UserGUI extends JFrame {
                 textArea.setWrapStyleWord(true);
                 textArea.setEditable(false);
                 textArea.setForeground(Color.decode("#cccccc"));
-                if(subMessageListIndex == index) textArea.setBackground(Color.decode("#485566"));
+                if (subMessageListIndex == index) textArea.setBackground(Color.decode("#485566"));
                 else textArea.setBackground(Color.decode("#606060"));
-                textArea.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+                textArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
                 textArea.setText((String) value);
 
                 JPanel tempPanel = new JPanel();
                 BoxLayout layout = new BoxLayout(tempPanel, BoxLayout.Y_AXIS);
                 tempPanel.setLayout(layout);
                 tempPanel.add(textArea);
-                tempPanel.setBorder(BorderFactory.createMatteBorder(0,0,1,0,Color.BLACK));
+                tempPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
 
                 return tempPanel;
             }
         };
     }
 
+    private void setBoxCellBorder(JComboBox categoryBox) {
+        for (int i = 0; i < categoryBox.getComponentCount(); i++)
+        {
+            if (categoryBox.getComponent(i) instanceof JComponent) {
+                ((JComponent) categoryBox.getComponent(i)).setBorder(new EmptyBorder(0, 0,0,0));
+            }
+
+            if (categoryBox.getComponent(i) instanceof AbstractButton) {
+                ((AbstractButton) categoryBox.getComponent(i)).setBorderPainted(false);
+            }
+        }
+    }
     private void Design(){
         //messagePanel
         scrollPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         messageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
-        messageList.setCellRenderer(cellBorderRenderer());
+        messageList.setCellRenderer(getCellBorderRenderer());
         messageList.addMouseMotionListener(listMouseMotionListener(messageList));
         messageList.addMouseListener(new MouseAdapter() {
             @Override
@@ -329,7 +329,7 @@ public class UserGUI extends JFrame {
             }});
         //subMessagePanel
         scrollPanel2.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        subMessageList.setCellRenderer(cellBorderRenderer());
+        subMessageList.setCellRenderer(getCellBorderRenderer());
         subMessageList.setFixedCellHeight(-1);
         subMessageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
         subMessageListIndex = -1;
@@ -342,16 +342,7 @@ public class UserGUI extends JFrame {
         scrollpane4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
         newTitleText.setBorder(BorderFactory.createEmptyBorder(5,3,5,3));
         categoryBox.setBorder(BorderFactory.createEmptyBorder(5,3,5,3));
-        for (int i = 0; i < categoryBox.getComponentCount(); i++)
-        {
-            if (categoryBox.getComponent(i) instanceof JComponent) {
-                ((JComponent) categoryBox.getComponent(i)).setBorder(new EmptyBorder(0, 0,0,0));
-            }
-
-            if (categoryBox.getComponent(i) instanceof AbstractButton) {
-                ((AbstractButton) categoryBox.getComponent(i)).setBorderPainted(false);
-            }
-        }
+        setBoxCellBorder(categoryBox);
         //Buttons design
         homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
         panel1Button.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
@@ -364,16 +355,18 @@ public class UserGUI extends JFrame {
         sendNewMessageButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         newThreadBackButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
         newThreadSendButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        homeButton.addMouseListener(buttonMouseAdapter(homeButton));
-        panel1Button.addMouseListener(buttonMouseAdapter(panel1Button));
-        panel2Button.addMouseListener(buttonMouseAdapter(panel2Button));
-        newMessageButton.addMouseListener(buttonMouseAdapter(newMessageButton));
-        messageBackButton.addMouseListener(buttonMouseAdapter(messageBackButton));
-        newSubMessageButton.addMouseListener(buttonMouseAdapter(newSubMessageButton));
-        archiveButton.addMouseListener(buttonMouseAdapter(archiveButton));
-        backToSubMessageButton.addMouseListener(buttonMouseAdapter(backToSubMessageButton));
-        sendNewMessageButton.addMouseListener(buttonMouseAdapter(sendNewMessageButton));
-        newThreadSendButton.addMouseListener(buttonMouseAdapter(newThreadSendButton));
-        newThreadBackButton.addMouseListener(buttonMouseAdapter(newThreadBackButton));
+        homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
+        panel1Button.addMouseListener(DesignHandlers.getButtonMouseAdapter(panel1Button));
+        panel2Button.addMouseListener(DesignHandlers.getButtonMouseAdapter(panel2Button));
+        newMessageButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageButton));
+        messageBackButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(messageBackButton));
+        newSubMessageButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newSubMessageButton));
+        archiveButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(archiveButton));
+        backToSubMessageButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(backToSubMessageButton));
+        sendNewMessageButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(sendNewMessageButton));
+        newThreadSendButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newThreadSendButton));
+        newThreadBackButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newThreadBackButton));
     }
+
+
 }
