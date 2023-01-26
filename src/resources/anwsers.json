@@ -1,8 +1,8 @@
 {
-  "lastId": 4,
+  "lastId": 5,
   "questions": [
     {
-      "id": 1,
+      "idNumber": 1,
       "category": "hardware",
       "subcategory": "print",
       "title": "Zacięcie papieru w drukarce",
@@ -14,7 +14,7 @@
       ]
     },
     {
-      "id": 2,
+      "idNumber": 2,
       "category": "hardware",
       "subcategory": "print",
       "title": "Wymiana tonera w drukarce",
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "id": 3,
+      "idNumber": 3,
       "category": "software",
       "subcategory": "windows",
       "title": "Aktualizacja systemu Windows 11",
@@ -35,19 +35,20 @@
         "windows",
         "aktualizacja",
         "update",
-        "windows 11"
+        "11"
       ]
     },
     {
-      "id": 4,
+      "idNumber": 4,
       "category": "software",
       "subcategory": "windows",
       "title": "Aktualizacja systemu Windows 10",
       "description": "Aby od razu zainstalować aktualizację, wybierz pozycję Start - Ustawienia - Aktualizacje i zabezpieczenia - Windows Update , a następnie wybierz pozycję Sprawdź, czy są dostępne aktualizacje. Jeśli są dostępne aktualizacje, zainstaluj je.",
       "tags": [
-        "drukarka",
-        "toner",
-        "wymiana"
+        "windows",
+        "aktualizacja",
+        "update",
+        "10"
       ]
     }
   ]

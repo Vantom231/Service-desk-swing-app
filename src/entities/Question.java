@@ -3,7 +3,7 @@ package entities;
 import java.util.Arrays;
 
 public class Question {
-    private int id;
+    private int idNumber;
     private String category;
     private String subcategory;
     private String title;
@@ -14,7 +14,7 @@ public class Question {
     }
 
     public Question(int id, String category, String subcategory, String title, String description, String[] tags) {
-        this.id = id;
+        this.idNumber = id;
         this.category = category;
         this.subcategory = subcategory;
         this.title = title;
@@ -23,11 +23,11 @@ public class Question {
     }
 
     public int getId() {
-        return id;
+        return idNumber;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this.idNumber = id;
     }
 
     public String getCategory() {
@@ -73,7 +73,7 @@ public class Question {
     @Override
     public String toString() {
         return "\nQuestion{" +
-                "\n id=" + id +
+                "\n id=" + idNumber +
                 ",\n category='" + category + '\'' +
                 ",\n subcategory='" + subcategory + '\'' +
                 ",\n title='" + title + '\'' +
