@@ -67,6 +67,11 @@ public class WorkerGUI extends JFrame {
     private JLabel searchIdText;
     private JLabel searchSubcategoryText;
     private JTextField tagsField;
+    private JLabel currentUsername;
+    private JLabel welcomeText;
+    private JLabel openThreadsCount;
+    private JLabel currentThreadsCount;
+    private JLabel archivedThreadsCount;
     private final DefaultListModel searchModel = (DefaultListModel) searchList.getModel();
 
     //others
@@ -79,8 +84,8 @@ public class WorkerGUI extends JFrame {
 
 
     WorkerGUI(Users current){
-        setGui();
         this.currentUser = current;
+        setGui();
     }
     private void setGui(){
         this.setContentPane(panel);
@@ -88,6 +93,14 @@ public class WorkerGUI extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+        design();
+
+        //welcome page
+        currentUsername.setText(currentUser.getUsername());
+        welcomeText.setText("Witaj " + currentUser.getUsername());
+        openThreadsCount.setText("Liczba wątków dostępnych: " + ReportsDao.getOpenReports().size());
+        currentThreadsCount.setText("Liczba wątków w trakcie: " + ReportsDao.getReportsByWorkerID(currentUser.getId()).size());
+        archivedThreadsCount.setText("Liczba wątków zakończonych: " + ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId()).size());
 
         //Card Layout
         mainPanel.setLayout(cardLayout);
@@ -100,24 +113,7 @@ public class WorkerGUI extends JFrame {
         mainPanel.add(anwserAddPanel, "anwserAddPanel");
         mainPanel.add(anwserPanel, "anwserPanel");
 
-        scrollPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        messageList.setCellRenderer(getCellBorderRenderer());
-        messageList.setFixedCellHeight(-1);
-        messageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
 
-        scrollPanel2.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        subMessageList.setCellRenderer(getCellBorderRenderer());
-        subMessageList.setFixedCellHeight(-1);
-        subMessageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
-
-        archiveList.setCellRenderer(getCellBorderRenderer());
-        archiveList.setFixedCellHeight(-1);
-        archiveList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
-        archiveList.addMouseListener(archiveThreadListMouseListener());
-
-        searchList.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        searchList.setCellRenderer(getCellBorderRenderer());
-        searchList.setFixedCellHeight(-1);
         searchList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -126,29 +122,23 @@ public class WorkerGUI extends JFrame {
             }
         });
 
-
-
-        scrollPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        scrollPanel4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        scrollPanel5.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-
-
-
-        //Buttons
-        homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
-
+        //Button listeners
+        homeButton.addActionListener(e -> {
+            openThreadsCount.setText("Liczba wątków dostępnych: " + ReportsDao.getOpenReports().size());
+            currentThreadsCount.setText("Liczba wątków w trakcie: " + ReportsDao.getReportsByWorkerID(currentUser.getId()).size());
+            archivedThreadsCount.setText("Liczba wątków zakończonych: " + ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId()).size());
+            cardLayout.show(mainPanel,"home");
+        });
         threadButton.addActionListener(e -> {
             threadListFiller();
             messageList.addMouseListener(threadListMouseListener(true));
             cardLayout.show(mainPanel,"panel1");
         });
-
         openThreadButton.addActionListener(e -> {
             openThreadListFiller();
             messageList.addMouseListener(threadListMouseListener(false));
             cardLayout.show(mainPanel, "panel1");
         });
-
         archiveButton.addActionListener(e -> {
             ReportsDao.archive(threadList.get(messageList.getSelectedIndex()));
             threadListFiller();
@@ -158,12 +148,10 @@ public class WorkerGUI extends JFrame {
             searchFiller();
             cardLayout.show(mainPanel,"searchPanel");
         });
-
         backButton.addActionListener(e -> {
             threadListFiller();
             cardLayout.show(mainPanel,"panel1");
         });
-
         newMessageBackButton.addActionListener(e -> {
             subMessageFiller(true);
             cardLayout.show(mainPanel,"panel1");
@@ -171,14 +159,15 @@ public class WorkerGUI extends JFrame {
         newMessageSendButton.addActionListener(e -> {
             MessagesDAO.addMessage(threadList.get(messageList.getSelectedIndex()).getId(),1,newMessageText.getText());
             subMessageFiller(true);
+            newMessageText.setText("");
             cardLayout.show(mainPanel,"messagePanel");
         });
-
         archiwumPanelButton.addActionListener(e -> {
             archiveListFiller();
             cardLayout.show(mainPanel,"archivePanel");
         });
         searchButton.addActionListener(e -> search());
+        searchText.addActionListener(e -> search());
         searchAddButton.addActionListener(e -> cardLayout.show(mainPanel,"anwserAddPanel"));
         searchSaveButton.addActionListener(e -> {
             Question temp = new Question(AnwsersDAO.getLastId()+1,
@@ -195,35 +184,6 @@ public class WorkerGUI extends JFrame {
             searchFiller();
             cardLayout.show(mainPanel, "searchPanel");
         });
-
-        homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        openThreadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        threadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        newMessageSendButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        newMessageBackButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        archiwumPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        searchPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
-        searchButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        searchAddButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        searchText.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        searchCategoryField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        searchSubCategoryField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        searchTitleField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        searchDescriptionField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        searchSaveButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-        tagsField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
-
-        homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
-        openThreadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(openThreadButton));
-        threadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(threadButton));
-        newMessageSendButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageSendButton));
-        newMessageBackButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageBackButton));
-        archiwumPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(archiwumPanelButton));
-        searchPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchPanelButton));
-        searchButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchButton));
-        searchAddButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchAddButton));
-        searchSaveButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchSaveButton));
-
     }
     private void threadListFiller(){
         threadTitleText.setText("Wątki w toku");
@@ -287,9 +247,6 @@ public class WorkerGUI extends JFrame {
     }
     private String [] stringToTable(String str){
         String [] temp = str.split("\\s+");
-        for (int i = 1; i < temp.length; i++) {
-//            temp[i] = temp[i].substring(1);
-        }
         return temp;
     }
     private MouseAdapter threadListMouseListener(boolean activeThread) {
@@ -342,14 +299,12 @@ public class WorkerGUI extends JFrame {
             backButton.setVisible(true);
         for (ActionListener a : newSubMessageButton.getActionListeners()) {
             newSubMessageButton.removeActionListener(a);
-            System.out.println("usuwanie");
         }
 
             ActionListener newMessageActionListener = e -> cardLayout.show(mainPanel,"newMessagePanel");
             ActionListener takeMessageActionListener = e -> {
                 temp.setWorkerId(currentUser.getId());
                 ReportsDao.takeForWorker(temp);
-                System.out.println("dziala2");
                 openThreadListFiller();
                 cardLayout.show(mainPanel, "panel1");
             };
@@ -362,7 +317,6 @@ public class WorkerGUI extends JFrame {
             }else{
                 newSubMessageButton.setText("Przyjmij");
                 newSubMessageButton.addActionListener(takeMessageActionListener);
-                System.out.println("dziala1");
                 archiveButton.setVisible(false);
 
             }
@@ -415,6 +369,59 @@ public class WorkerGUI extends JFrame {
                 return tempPanel;
             }
         };
+    }
+    private void design(){
+        scrollPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        messageList.setCellRenderer(getCellBorderRenderer());
+        messageList.setFixedCellHeight(-1);
+        messageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.BLACK));
+
+        scrollPanel2.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        subMessageList.setCellRenderer(getCellBorderRenderer());
+        subMessageList.setFixedCellHeight(-1);
+        subMessageList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
+
+        archiveList.setCellRenderer(getCellBorderRenderer());
+        archiveList.setFixedCellHeight(-1);
+        archiveList.setBorder(BorderFactory.createMatteBorder(1,0,0,0,Color.black));
+        archiveList.addMouseListener(archiveThreadListMouseListener());
+
+        searchList.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        searchList.setCellRenderer(getCellBorderRenderer());
+        searchList.setFixedCellHeight(-1);
+
+        scrollPanel3.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        scrollPanel4.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        scrollPanel5.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+
+        homeButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        openThreadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        threadButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        newMessageSendButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        newMessageBackButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        archiwumPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        searchPanelButton.setBorder(BorderFactory.createEmptyBorder(15,10,15,10));
+        searchButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchAddButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchText.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchCategoryField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchSubCategoryField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchTitleField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchDescriptionField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        searchSaveButton.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+        tagsField.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+
+        homeButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(homeButton));
+        openThreadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(openThreadButton));
+        threadButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(threadButton));
+        newMessageSendButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageSendButton));
+        newMessageBackButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(newMessageBackButton));
+        archiwumPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(archiwumPanelButton));
+        searchPanelButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchPanelButton));
+        searchButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchButton));
+        searchAddButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchAddButton));
+        searchSaveButton.addMouseListener(DesignHandlers.getButtonMouseAdapter(searchSaveButton));
+
     }
 
 }

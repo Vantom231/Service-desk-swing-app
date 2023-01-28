@@ -1,10 +1,8 @@
 package gui;
 
-import dao.ReportsArchiveDAO;
 import dao.ReportsDao;
 import dao.UsersDAO;
 import entities.Reports;
-import entities.ReportsArchive;
 import entities.Users;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -12,7 +10,6 @@ import utils.HibernateUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.math.BigInteger;
 import java.util.List;
 
 public class Main extends JFrame{
@@ -40,7 +37,6 @@ public class Main extends JFrame{
                 System.out.println(reports.toString());
             }
 
-            System.out.println("nie przyjęte");
             Session session = HibernateUtils.getSessionFactory().openSession();
             Query query = session.createQuery("From Reports where workerId is null");
 

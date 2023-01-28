@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 public class UserGUI extends JFrame {
@@ -78,6 +77,10 @@ public class UserGUI extends JFrame {
     private JLabel searchIdText;
     private JLabel searchSubCategoryText;
     private JScrollPane scrollPanel4;
+    private JLabel archivedCountText;
+    private JLabel currentCoutnText;
+    private JLabel welcomeText;
+    private JLabel usernameText;
     private final DefaultListModel anwserModel = (DefaultListModel) anwserList.getModel();
 
     //others
@@ -113,6 +116,12 @@ public class UserGUI extends JFrame {
         this.setLocationRelativeTo(null);
         Design();
         this.setVisible(true);
+
+        //Wlcome page
+        welcomeText.setText("Witaj "+ currentUser.getUsername());
+        currentCoutnText.setText("Liczba wątków w toku: " +ReportsDao.getReportsByUserID(currentUser.getId()).size() );
+        archivedCountText.setText("Liczba wątków zakończonych: " + ReportsArchiveDAO.getReportsByUserID(currentUser.getId()).size());
+        usernameText.setText(currentUser.getUsername());
 
         //CardLayout setup
         mainPanel.setLayout(cardLayout);
@@ -158,10 +167,18 @@ public class UserGUI extends JFrame {
         });
 
         //newMessage Panel
-        newMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newThreadPanel"));
+        newMessageButton.addActionListener(e -> {
+            newTitleText.setText("");
+            categoryBox.setSelectedIndex(0);
+            newThreadText.setText("");
+            cardLayout.show(mainPanel,"newThreadPanel");
+        });
 
         //subMessagePanel
-        newSubMessageButton.addActionListener(e -> cardLayout.show(mainPanel,"newMessagePanel"));
+        newSubMessageButton.addActionListener(e -> {
+            newMessageTextPane.setText("");
+            cardLayout.show(mainPanel,"newMessagePanel");
+        });
         archiveButton.addActionListener(e -> {
             ReportsDao.archive(reportsList.get(messageList.getSelectedIndex()));
             listFiller();
@@ -183,6 +200,7 @@ public class UserGUI extends JFrame {
         newThreadSendButton.addActionListener(e -> newThread());
 
         //searchPanel
+        searchText.addActionListener(e -> search());
         searchButton.addActionListener(e -> search());
         anwserList.addMouseListener(new MouseAdapter() {
             @Override
