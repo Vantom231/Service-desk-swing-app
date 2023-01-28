@@ -123,7 +123,12 @@ public class WorkerGUI extends JFrame {
         });
 
         //Button listeners
-        homeButton.addActionListener(e -> cardLayout.show(mainPanel,"home"));
+        homeButton.addActionListener(e -> {
+            openThreadsCount.setText("Liczba wątków dostępnych: " + ReportsDao.getOpenReports().size());
+            currentThreadsCount.setText("Liczba wątków w trakcie: " + ReportsDao.getReportsByWorkerID(currentUser.getId()).size());
+            archivedThreadsCount.setText("Liczba wątków zakończonych: " + ReportsArchiveDAO.getReportsByWorkerID(currentUser.getId()).size());
+            cardLayout.show(mainPanel,"home");
+        });
         threadButton.addActionListener(e -> {
             threadListFiller();
             messageList.addMouseListener(threadListMouseListener(true));
@@ -154,6 +159,7 @@ public class WorkerGUI extends JFrame {
         newMessageSendButton.addActionListener(e -> {
             MessagesDAO.addMessage(threadList.get(messageList.getSelectedIndex()).getId(),1,newMessageText.getText());
             subMessageFiller(true);
+            newMessageText.setText("");
             cardLayout.show(mainPanel,"messagePanel");
         });
         archiwumPanelButton.addActionListener(e -> {
@@ -161,6 +167,7 @@ public class WorkerGUI extends JFrame {
             cardLayout.show(mainPanel,"archivePanel");
         });
         searchButton.addActionListener(e -> search());
+        searchText.addActionListener(e -> search());
         searchAddButton.addActionListener(e -> cardLayout.show(mainPanel,"anwserAddPanel"));
         searchSaveButton.addActionListener(e -> {
             Question temp = new Question(AnwsersDAO.getLastId()+1,

@@ -200,6 +200,7 @@ public class UserGUI extends JFrame {
         newThreadSendButton.addActionListener(e -> newThread());
 
         //searchPanel
+        searchText.addActionListener(e -> search());
         searchButton.addActionListener(e -> search());
         anwserList.addMouseListener(new MouseAdapter() {
             @Override

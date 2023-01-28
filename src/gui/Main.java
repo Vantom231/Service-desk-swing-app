@@ -37,7 +37,6 @@ public class Main extends JFrame{
                 System.out.println(reports.toString());
             }
 
-            System.out.println("nie przyjęte");
             Session session = HibernateUtils.getSessionFactory().openSession();
             Query query = session.createQuery("From Reports where workerId is null");
 
